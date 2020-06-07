@@ -1,19 +1,19 @@
 package stage.database;
 
-import stage.common.model.User;
-
 import java.util.List;
+import stage.common.model.User;
 
 /**
  * // TODO description
  *
- * @author Julian Drees, Tobias Fuchs, Yannick Kirschen, Cevin Steve Oehne, Tobias Tappert
+ * @author Julian Drees, Tobias Fuchs, Yannick Kirschen, Cevin Steve Oehne,
+ * Tobias Tappert
  * @since 1.0.0
  */
 public interface UserRepository {
     List<User> getUsers();
 
-    User getUser(Integer id);
+    <T extends User> T getUser(Integer id);
 
     Integer addUser(User user);
 
@@ -23,7 +23,11 @@ public interface UserRepository {
 
     Integer getId(String userName);
 
-    default User getUser(String userName) {
+    boolean isUniqueUsername(String username);
+
+    Integer generateId();
+
+    default <T extends User> T getUser(String userName) {
         return getUser(getId(userName));
     }
 

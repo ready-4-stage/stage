@@ -15,12 +15,6 @@
     <dependencies>
         <dependency>
             <groupId>stage</groupId>
-            <artifactId>stage-common</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>stage</groupId>
             <artifactId>stage-database</artifactId>
             <version>${project.version}</version>
         </dependency>

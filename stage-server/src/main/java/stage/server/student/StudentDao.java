@@ -73,7 +73,16 @@ public class StudentDao implements StudentRepository {
 
     @Override
     public void updateStudent(Integer id, Student newStudent) {
+        String updateUsersSql = "update users set userName = ?, password = ?, mail = ?, role = ? where id = ?;";
+        String updateStudentSql = "update students set name = ?, firstName = ?, placeOfBirth = ?, phone = ?, address = ?, iban = ?, birthDay = ? where user_id = ?;";
 
+        try {
+            this.sqlConnection.update(updateUsersSql, newStudent.getUsername(), newStudent.getPassword(), newStudent.getMail(), newStudent.getRole().ordinal(), id);
+            this.sqlConnection.update(updateStudentSql, newStudent.getName(), newStudent.getFirstName(), newStudent.getPlaceOfBirth(), newStudent.getPhone(), newStudent.getAddress(), newStudent.getIban());
+            // TODO birthday
+        } catch (SQLException ex) {
+            log.error(ex);
+        }
     }
 
     @Override

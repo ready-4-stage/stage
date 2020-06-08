@@ -1,20 +1,22 @@
 package stage.server.student;
 
-import java.time.LocalDate;
-import java.util.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
-import stage.common.model.*;
-import stage.database.*;
+import stage.common.model.Role;
+import stage.common.model.Student;
+import stage.database.StudentRepository;
+import stage.database.UserRepository;
 import stage.server.user.DummyUserRepository;
 
-@Repository
+import java.time.LocalDate;
+import java.util.LinkedList;
+import java.util.List;
+
+//@Repository
 public class DummyStudentRepository implements StudentRepository {
     private final List<Student> students = new LinkedList<>();
 
     private final UserRepository userRepository;
 
-    @Autowired
+    //    @Autowired
     public DummyStudentRepository(DummyUserRepository userRepository) {
         Student student1 = new Student();
         student1.setId(0);
@@ -44,20 +46,20 @@ public class DummyStudentRepository implements StudentRepository {
         student2.setIban("xxx");
         student2.setBirthday(LocalDate.now());
 
-        students.add(student1);
-        students.add(student2);
+        this.students.add(student1);
+        this.students.add(student2);
 
         this.userRepository = userRepository;
     }
 
     @Override
     public List<Student> getStudents() {
-        return students;
+        return this.students;
     }
 
     @Override
     public Student getStudent(Integer id) {
-        for (Student student : students) {
+        for (Student student : this.students) {
             if (student.getId().equals(id)) {
                 return student;
             }
@@ -67,7 +69,7 @@ public class DummyStudentRepository implements StudentRepository {
 
     @Override
     public Student getStudent(String userName) {
-        for (Student student : students) {
+        for (Student student : this.students) {
             if (student.getUsername().equals(userName)) {
                 return student;
             }
@@ -77,15 +79,15 @@ public class DummyStudentRepository implements StudentRepository {
 
     @Override
     public Integer addStudent(Student student) {
-        student.setId(userRepository.generateId());
-        students.add(student);
-        userRepository.addUser(student);
+        student.setId(this.userRepository.generateId());
+        this.students.add(student);
+        this.userRepository.addUser(student);
         return student.getId();
     }
 
     @Override
     public void updateStudent(Integer id, Student newStudent) {
-        for (Student student : students) {
+        for (Student student : this.students) {
             if (student.getId().equals(id)) {
                 student.setUsername(newStudent.getUsername());
                 student.setPassword(newStudent.getPassword());
@@ -103,7 +105,7 @@ public class DummyStudentRepository implements StudentRepository {
 
     @Override
     public void updateStudent(String userName, Student newStudent) {
-        for (Student student : students) {
+        for (Student student : this.students) {
             if (student.getUsername().equals(userName)) {
                 student.setUsername(newStudent.getUsername());
                 student.setPassword(newStudent.getPassword());
@@ -121,7 +123,7 @@ public class DummyStudentRepository implements StudentRepository {
 
     @Override
     public void deleteStudent(Integer id) {
-        students.remove(getStudent(id));
+        this.students.remove(this.getStudent(id));
     }
 
     @Override

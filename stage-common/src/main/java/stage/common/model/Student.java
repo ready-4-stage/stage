@@ -15,7 +15,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Student extends User {
-    private String name;
+    private String lastName;
     private String firstName;
     private String placeOfBirth;
     private String phone;
@@ -25,7 +25,7 @@ public class Student extends User {
 
     public Student(Student student) {
         super(student);
-        name = student.getName();
+        lastName = student.getLastName();
         firstName = student.getFirstName();
         placeOfBirth = student.getPlaceOfBirth();
         phone = student.getPhone();

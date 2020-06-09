@@ -1,63 +1,59 @@
 package stage.server.database;
 
-import lombok.extern.log4j.Log4j2;
-import org.springframework.stereotype.Service;
+import javax.annotation.*;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * // TODO description
  *
- * @author Julian Drees
+ * @author Julian Drees, Tobias Fuchs, Yannick Kirschen, Cevin Steve Oehne,
+ * Tobias Tappert
  * @since 1.0.0
  */
-@Service
 @Log4j2
+@Configuration
 public class SqlConnection {
-
     private Connection connection;
 
     @PostConstruct
+    @SuppressWarnings("java:S2115")
     public void openConnection() throws SQLException {
-        if (!this.isConnected()) {
-            log.info("trying to establish connection to database");
-            try {
-                Class.forName("org.sqlite.JDBC");
-                this.connection = DriverManager.getConnection("jdbc:sqlite://DB");
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-
+        if (!isConnected()) {
+            connection = DriverManager.getConnection("jdbc:h2:mem:");
+            connection.setAutoCommit(false);
         }
     }
 
     @PreDestroy
     public void closeConnection() throws SQLException {
-        if (this.isConnected()) {
-            this.connection.close();
+        if (isConnected()) {
+            connection.close();
         }
     }
 
     public boolean isConnected() {
-        return this.connection != null;
+        return connection != null;
+    }
+
+    public void commit() throws SQLException {
+        connection.commit();
     }
 
     /**
-     * Creates a {@link PreparedStatement}. Should be used in try-with-resources to close
-     * the statement after execution.
+     * Creates a {@link PreparedStatement}. Should be used in try-with-resources
+     * to close the statement after execution.
      *
      * @param query      sql query
      * @param parameters sql parameters (varargs or array)
      * @return an executable statement
      */
-    public PreparedStatement prepareStatement(String query, Object... parameters) throws SQLException {
-        PreparedStatement ps = this.connection.prepareStatement(query);
+    @SuppressWarnings("java:S2095") // We'll use try-with later on in the code
+    public PreparedStatement prepareStatement(String query,
+        Object... parameters) throws SQLException {
+        PreparedStatement ps = connection.prepareStatement(query);
         for (int i = 0; i < parameters.length; i++) {
             ps.setObject(i + 1, parameters[i]);
         }
@@ -65,13 +61,13 @@ public class SqlConnection {
     }
 
     public void update(String query, Object... parameters) throws SQLException {
-        try (PreparedStatement ps = this.prepareStatement(query, parameters)) {
+        try (PreparedStatement ps = prepareStatement(query, parameters)) {
             ps.executeUpdate();
         }
     }
 
-    public ResultSet result(String query, Object... parameters) throws SQLException {
-        return this.prepareStatement(query, parameters).executeQuery();
+    public ResultSet result(String query, Object... parameters)
+        throws SQLException {
+        return prepareStatement(query, parameters).executeQuery();
     }
-
 }

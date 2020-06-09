@@ -1,4 +1,4 @@
-package stage.database;
+package stage.server.user;
 
 import java.util.List;
 import stage.common.model.User;

@@ -5,20 +5,16 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import stage.common.model.*;
-import stage.database.*;
 import stage.server.user.UserAlreadyExistsException;
 
 @Log4j2
 @Service
 public class StudentService {
     private final StudentRepository repository;
-    private final UserRepository userRepository;
 
     @Autowired
-    public StudentService(StudentRepository repository,
-        UserRepository userRepository) {
+    public StudentService(StudentRepository repository) {
         this.repository = repository;
-        this.userRepository = userRepository;
     }
 
     public List<Student> getStudents() {
@@ -40,7 +36,7 @@ public class StudentService {
     public Integer addUser(Student student) {
         // TODO: authentication (admin only)
 
-        if (!userRepository.isUniqueUsername(student.getUsername())) {
+        if (!repository.isUniqueUsername(student.getUsername())) {
             throw new UserAlreadyExistsException();
         }
 
@@ -61,7 +57,7 @@ public class StudentService {
         newStudent.setId(oldStudent.getId());
         newStudent.setRole(oldStudent.getRole());
 
-        updateStudentByIdOrUsername(id, newStudent);
+        updateStudentByIdOrUsername(id, oldStudent, newStudent);
     }
 
     public void deleteStudent(String id) {
@@ -86,13 +82,58 @@ public class StudentService {
     }
 
     private void updateStudentByIdOrUsername(String username,
-        Student newStudent) {
+        Student oldStudent, Student newStudent) {
         // TODO: replace exception by something else
         try {
             Integer id = Integer.parseInt(username);
-            repository.updateStudent(id, newStudent);
+
+            if (newStudent.getId() == null) {
+                newStudent.setId(oldStudent.getId());
+            }
+
+            if (newStudent.getUsername() == null) {
+                newStudent.setUsername(oldStudent.getUsername());
+            }
+
+            if (newStudent.getPassword() == null) {
+                newStudent.setPassword(oldStudent.getPassword());
+            }
+
+            if (newStudent.getMail() == null) {
+                newStudent.setMail(oldStudent.getMail());
+            }
+
+            if (newStudent.getLastName() == null) {
+                newStudent.setLastName(oldStudent.getLastName());
+            }
+
+            if (newStudent.getFirstName() == null) {
+                newStudent.setFirstName(oldStudent.getFirstName());
+            }
+
+            if (newStudent.getPlaceOfBirth() == null) {
+                newStudent.setPlaceOfBirth(oldStudent.getPlaceOfBirth());
+            }
+
+            if (newStudent.getPhone() == null) {
+                newStudent.setPhone(oldStudent.getPhone());
+            }
+
+            if (newStudent.getAddress() == null) {
+                newStudent.setAddress(oldStudent.getAddress());
+            }
+
+            if (newStudent.getIban() == null) {
+                newStudent.setIban(oldStudent.getIban());
+            }
+
+            if (newStudent.getBirthday() == null) {
+                newStudent.setBirthday(oldStudent.getBirthday());
+            }
+
+            repository.updateStudent(id, oldStudent, newStudent);
         } catch (NumberFormatException e) {
-            repository.updateStudent(username, newStudent);
+            repository.updateStudent(username, oldStudent, newStudent);
         }
     }
 

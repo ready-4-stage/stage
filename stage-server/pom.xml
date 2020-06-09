@@ -12,25 +12,22 @@
 
     <artifactId>stage-server</artifactId>
 
+    <properties>
+        <h2.version>1.4.200</h2.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>stage</groupId>
-            <artifactId>stage-database</artifactId>
+            <artifactId>stage-common</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>${h2.version}</version>
         </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc -->
-        <dependency>
-            <groupId>org.xerial</groupId>
-            <artifactId>sqlite-jdbc</artifactId>
-            <version>3.31.1</version>
-        </dependency>
-
     </dependencies>
 
     <build>

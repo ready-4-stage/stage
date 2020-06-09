@@ -1,13 +1,13 @@
-package stage.database;
-
-import stage.common.model.Lesson;
+package stage.server.lesson;
 
 import java.util.List;
+import stage.common.model.Lesson;
 
 /**
  * // TODO description
  *
- * @author Julian Drees, Tobias Fuchs, Yannick Kirschen, Cevin Steve Oehne, Tobias Tappert
+ * @author Julian Drees, Tobias Fuchs, Yannick Kirschen, Cevin Steve Oehne,
+ * Tobias Tappert
  * @since 1.0.0
  */
 public interface LessonRepository {

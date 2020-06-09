@@ -1,0 +1,15 @@
+SELECT USER.ID,
+       USERNAME,
+       PASSWORD,
+       MAIL,
+       ROLE_ID,
+       LAST_NAME,
+       FIRST_NAME,
+       PLACE_OF_BIRTH,
+       PHONE,
+       ADDRESS,
+       IBAN,
+       BIRTHDAY
+FROM STUDENT
+         INNER JOIN USER ON STUDENT.ID = USER.ID
+WHERE USER.ID = ?;

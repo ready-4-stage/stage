@@ -1,17 +1,14 @@
 package stage.common.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-
 import java.time.LocalDate;
-import java.util.List;
+import java.util.*;
+import lombok.*;
 
 /**
  * // TODO description
  *
- * @author Julian Drees, Tobias Fuchs, Yannick Kirschen, Cevin Steve Oehne, Tobias Tappert
+ * @author Julian Drees, Tobias Fuchs, Yannick Kirschen, Cevin Steve Oehne,
+ * Tobias Tappert
  * @since 1.0.0
  */
 @Data
@@ -20,7 +17,7 @@ import java.util.List;
 @AllArgsConstructor
 public class Teacher extends User {
     private String name;
-    private String lastName;
+    private String firstName;
     private String placeOfBirth;
     private String phone;
     private String address;
@@ -28,4 +25,17 @@ public class Teacher extends User {
     private LocalDate birthday;
     private Double hourlyRate;
     private List<String> qualifications;
+
+    public Teacher(Teacher teacher) {
+        super(teacher);
+        name = teacher.getName();
+        firstName = teacher.getFirstName();
+        placeOfBirth = teacher.getPlaceOfBirth();
+        phone = teacher.getPhone();
+        address = teacher.getAddress();
+        iban = teacher.getIban();
+        birthday = teacher.getBirthday();
+        hourlyRate = teacher.getHourlyRate();
+        qualifications = new LinkedList<>(teacher.getQualifications());
+    }
 }

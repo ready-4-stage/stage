@@ -12,6 +12,10 @@
 
     <artifactId>stage-server</artifactId>
 
+    <properties>
+        <h2.version>1.4.200</h2.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>stage</groupId>
@@ -20,14 +24,9 @@
         </dependency>
 
         <dependency>
-            <groupId>stage</groupId>
-            <artifactId>stage-database</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>${h2.version}</version>
         </dependency>
     </dependencies>
 
@@ -37,9 +36,16 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
 
-                <configuration>
-                    <mainClass>stage.server.Main</mainClass>
-                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>stage.server.Main</mainClass>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

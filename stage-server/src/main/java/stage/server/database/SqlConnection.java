@@ -46,13 +46,6 @@ public class SqlConnection {
         }
     }
 
-    @PreDestroy
-    public void closeConnection() throws SQLException {
-        if (isConnected()) {
-            connection.close();
-        }
-    }
-
     public boolean isConnected() {
         return connection != null;
     }

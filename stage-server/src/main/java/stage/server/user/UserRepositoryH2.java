@@ -83,6 +83,7 @@ public class UserRepositoryH2 implements UserRepository {
             while (rs.next()) {
                 users.add(buildUser(rs));
             }
+            sqlConnection.commit();
         } catch (SQLException ex) {
             log.error(ex);
         }
@@ -135,6 +136,7 @@ public class UserRepositoryH2 implements UserRepository {
         try {
             sqlConnection.update(updateUserSql, newUser.getUsername(), newUser.getPassword(),
                 newUser.getMail(), roleRepository.getRoleId(oldUser.getRole()), id);
+            sqlConnection.commit();
         } catch (SQLException ex) {
             log.error(ex);
         }
@@ -144,6 +146,7 @@ public class UserRepositoryH2 implements UserRepository {
     public void deleteUser(Integer id) {
         try {
             sqlConnection.update(deleteUserSql, id);
+            sqlConnection.commit();
         } catch (SQLException ex) {
             log.error(ex);
         }

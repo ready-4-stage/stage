@@ -64,6 +64,7 @@ public class RoleRepositoryH2 implements RoleRepository {
             if (rs.next()) {
                 id = rs.getInt("ID");
             }
+            sqlConnection.commit();
         } catch (SQLException ex) {
             log.error(ex);
         }

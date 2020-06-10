@@ -3,6 +3,7 @@ package stage.common.model;
 import javax.validation.constraints.*;
 
 import lombok.*;
+import stage.common.authentication.JwtUser;
 
 /**
  * // TODO description
@@ -14,7 +15,7 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class User implements JwtUser {
     @NotNull(message = "The ID must not be null.")
     private Integer id;
 

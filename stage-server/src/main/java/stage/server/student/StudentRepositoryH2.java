@@ -1,13 +1,14 @@
 package stage.server.student;
 
-import javax.annotation.PostConstruct;
-
 import java.sql.Date;
 import java.sql.*;
 import java.util.*;
-import lombok.extern.log4j.Log4j2;
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import lombok.extern.log4j.Log4j2;
 import stage.common.model.*;
 import stage.server.database.SqlConnection;
 
@@ -22,7 +23,7 @@ import static stage.common.FileUtil.readFile;
  */
 @Log4j2
 @Repository
-public class StudentRepositoryH2 implements StudentRepository {
+class StudentRepositoryH2 implements StudentRepository {
     private final String initialFill;
     private final String selectStudents;
     private final String selectStudentById;
@@ -41,7 +42,7 @@ public class StudentRepositoryH2 implements StudentRepository {
     private final SqlConnection connection;
 
     @Autowired
-    public StudentRepositoryH2(SqlConnection connection) {
+    StudentRepositoryH2(SqlConnection connection) {
         this.connection = connection;
 
         initialFill = readFile("sql/initial_fill.sql");

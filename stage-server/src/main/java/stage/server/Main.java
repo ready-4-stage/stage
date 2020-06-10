@@ -8,6 +8,10 @@ import org.springframework.context.annotation.ComponentScan;
 @ComponentScan({ "stage.common", "stage.server" })
 public class Main {
     public static void main(String[] args) {
+        // ApplicationContext context = SpringApplication(Main.class, args);
         SpringApplication.run(Main.class, args);
+
+        // TODO: replace Main.class by the implementation of JwtUserDatabase once the UserService is done.
+        // JwtUserDetailsService.setDatabase(context.getBean(Main.class));
     }
 }

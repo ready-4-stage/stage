@@ -9,4 +9,9 @@ management:
         probes:
             enabled: true
 
+token:
+    authenticationUrl: '/authenticate'
+    publicUrl: '/v1'
+    secret: 'rS2wZjIMH8Di8zSEQaIf'
+
 jdbc: 'jdbc:h2:mem:'

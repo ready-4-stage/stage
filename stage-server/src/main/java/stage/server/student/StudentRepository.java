@@ -1,6 +1,7 @@
 package stage.server.student;
 
 import java.util.List;
+
 import stage.common.model.*;
 
 /**
@@ -10,7 +11,7 @@ import stage.common.model.*;
  * Tobias Tappert
  * @since 1.0.0
  */
-public interface StudentRepository {
+interface StudentRepository {
     List<Student> getStudents();
 
     Student getStudent(Integer id);

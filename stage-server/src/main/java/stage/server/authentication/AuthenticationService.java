@@ -1,15 +1,24 @@
 package stage.server.authentication;
 
-/**
- * // TODO description
- *
- * @author Julian Drees, Tobias Fuchs, Yannick Kirschen, Cevin Steve Oehne, Tobias Tappert
- * @since 1.0.0
- */
-public interface AuthenticationService {
-    String login(Integer userId);
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
 
-    void logout(Integer userId);
+import stage.common.model.*;
 
-    boolean hasValidSession(Integer userId);
+@Service
+public class AuthenticationService {
+    public Role getCurrentRole() {
+        String username = (String) SecurityContextHolder.getContext()
+            .getAuthentication()
+            .getPrincipal();
+        User user = new User(); // UserService.getUser(username);
+        user.setUsername(username);
+        return user.getRole();
+    }
+
+    public void requireAdmin() {
+        if (getCurrentRole() != Role.ADMIN) {
+            throw new ForbiddenException();
+        }
+    }
 }

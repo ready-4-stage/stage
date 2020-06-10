@@ -10,7 +10,7 @@ business logic. It uses `stage-common` and `stage-database`.
 ```bash
 # In root directory of the project
 mvn clean install
-java -jar stage-server/target/stage-server-VERSION.jar --database=sqlite
+java -jar stage-server/target/stage-server-VERSION.jar -Dspring.profiles.active=dev -Dstage.db.user=USER -Dstage.db.pwd=PASSWORD
 ```
 
 For the latest version see [Tags](https://github.com/ready-4-stage/stage/tags).

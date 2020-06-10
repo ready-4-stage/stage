@@ -20,6 +20,14 @@
             <version>${project.version}</version>
         </dependency>
 
+        <!-- Additional Spring configuration metadata. -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- In-Memory database. -->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>

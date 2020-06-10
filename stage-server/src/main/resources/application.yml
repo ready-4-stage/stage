@@ -1,2 +1,6 @@
+spring:
+    profiles: dev
 server:
     port: 5000
+
+jdbc: 'jdbc:h2:mem:'

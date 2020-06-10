@@ -12,22 +12,20 @@
 
     <artifactId>stage-common</artifactId>
 
-    <properties>
-        <commons.io.version>2.7</commons.io.version>
-    </properties>
-
     <dependencies>
+        <!-- Spring! -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
+        <!-- Read file into String. -->
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>${commons.io.version}</version>
         </dependency>
 
+        <!-- Spice up Java. -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>

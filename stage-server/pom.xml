@@ -27,6 +27,12 @@
             <optional>true</optional>
         </dependency>
 
+        <!-- Health check. -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
         <!-- In-Memory database. -->
         <dependency>
             <groupId>com.h2database</groupId>

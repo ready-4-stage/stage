@@ -1,5 +1,7 @@
 package stage.common.model;
 
+import javax.validation.constraints.*;
+
 import lombok.*;
 
 /**
@@ -13,10 +15,19 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
+    @NotNull(message = "The ID must not be null.")
     private Integer id;
+
+    @NotBlank(message = "The username must not be blank.")
     private String username;
+
+    @NotBlank(message = "The password must not be blank.")
     private String password;
+
+    @NotBlank(message = "The mail must not be blank.")
     private String mail;
+
+    @NotNull(message = "The role must not be null.")
     private Role role;
 
     public User(User user) {

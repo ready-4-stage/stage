@@ -1,0 +1,3 @@
+DELETE
+FROM ROOM
+WHERE ID = ?;

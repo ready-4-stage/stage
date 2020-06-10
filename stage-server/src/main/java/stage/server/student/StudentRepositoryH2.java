@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import stage.common.model.*;
 import stage.server.database.SqlConnection;
+import stage.server.role.RoleRepository;
+import stage.server.user.UserRepository;
 
 import static stage.common.FileUtil.readFile;
 
@@ -26,42 +28,33 @@ public class StudentRepositoryH2 implements StudentRepository {
     private final String initialFill;
     private final String selectStudents;
     private final String selectStudentById;
-    private final String userInsert;
     private final String studentInsert;
-    private final String userUpdate;
     private final String studentUpdate;
-    private final String userDelete;
     private final String studentDelete;
     private final String userSelectId;
-    private final String usernameUnique;
-    private final String generateId;
-    private final String roleSelectId;
-    private final String roleSelectById;
 
     private final SqlConnection connection;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
 
     @Autowired
-    public StudentRepositoryH2(SqlConnection connection) {
+    public StudentRepositoryH2(SqlConnection connection, UserRepository userRepository, RoleRepository roleRepository) {
         this.connection = connection;
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
 
         initialFill = readFile("sql/initial_fill.sql");
         selectStudents = readFile("sql/student/student_select_all.sql");
         selectStudentById = readFile("sql/student/student_select_by_id.sql");
-        userInsert = readFile("sql/user/user_insert.sql");
         studentInsert = readFile("sql/student/student_insert.sql");
-        userUpdate = readFile("sql/user/user_update.sql");
         studentUpdate = readFile("sql/student/student_update.sql");
-        userDelete = readFile("sql/user/user_delete.sql");
         studentDelete = readFile("sql/student/student_delete.sql");
         userSelectId = readFile("sql/user/user_select_id.sql");
-        usernameUnique = readFile("sql/username_unique.sql");
-        generateId = readFile("sql/generate_id.sql");
-        roleSelectId = readFile("sql/role/role_select_id.sql");
-        roleSelectById = readFile("sql/role/role_select_by_id.sql");
     }
 
     @PostConstruct
-    public void initialize() {
+    @Override
+    public void onInitialize() {
         String createRoleTableSql = readFile("sql/role/role_table_create.sql");
         String createUserTableSql = readFile("sql/user/user_table_create.sql");
         String createStudentTableSql = readFile(
@@ -72,8 +65,8 @@ public class StudentRepositoryH2 implements StudentRepository {
             connection.update(createUserTableSql);
             connection.update(createStudentTableSql);
 
-            connection.update(initialFill);
-
+            // TODO: darf nur in einem Service ausgeführt werden, ansonsten aufteilen
+            // connection.update(initialFill);
             connection.commit();
         } catch (SQLException e) {
             log.error("SQL error: {}", e.getMessage());
@@ -113,10 +106,7 @@ public class StudentRepositoryH2 implements StudentRepository {
     public Integer addStudent(Student student) {
         int id = -1;
         try {
-            id = generateId();
-            connection.update(userInsert, id, student.getUsername(),
-                student.getPassword(), getId(student.getRole()),
-                student.getMail());
+            id = userRepository.addUser(student);
             connection.update(studentInsert, id, student.getLastName(),
                 student.getFirstName(), student.getPlaceOfBirth(),
                 student.getPhone(), student.getAddress(), student.getAddress(),
@@ -132,9 +122,7 @@ public class StudentRepositoryH2 implements StudentRepository {
     public void updateStudent(Integer id, Student oldStudent,
         Student newStudent) {
         try {
-            connection.update(userUpdate, newStudent.getUsername(),
-                newStudent.getPassword(), newStudent.getMail(),
-                getId(oldStudent.getRole()), id);
+            userRepository.updateUser(id, newStudent);
             connection.update(studentUpdate, newStudent.getLastName(),
                 newStudent.getFirstName(), newStudent.getPlaceOfBirth(),
                 newStudent.getPhone(), newStudent.getAddress(),
@@ -150,8 +138,9 @@ public class StudentRepositoryH2 implements StudentRepository {
     public void deleteStudent(Integer id) {
         try {
             connection.update(studentDelete, id);
-            connection.update(userDelete, id);
             connection.commit();
+
+            userRepository.deleteUser(id);
         } catch (SQLException ex) {
             log.error(ex);
         }
@@ -172,56 +161,13 @@ public class StudentRepositoryH2 implements StudentRepository {
         return id;
     }
 
-    @Override
-    public Integer getId(Role role) {
-        int id = -1;
-        try (ResultSet rs = connection.result(roleSelectId,
-            role.name().toUpperCase())) {
-            if (rs.next()) {
-                id = rs.getInt("ID");
-            }
-            connection.commit();
-        } catch (SQLException ex) {
-            log.error(ex);
-        }
-        return id;
-    }
-
-    @Override
-    public Role getRole(Integer id) {
-        try (ResultSet rs = connection.result(roleSelectById, id)) {
-            if (rs.next()) {
-                String name = rs.getString("DESCRIPTION").toUpperCase();
-                return Role.valueOf(name);
-            }
-            connection.commit();
-        } catch (SQLException ex) {
-            log.error(ex);
-        }
-        return null;
-    }
-
-    @Override
-    public boolean isUniqueUsername(String username) {
-        try (ResultSet rs = connection.result(usernameUnique,
-            username.toUpperCase())) {
-            if (rs.next()) {
-                return false;
-            }
-            connection.commit();
-        } catch (SQLException e) {
-            log.error("Unable to perform SQL request: {}", e.getMessage());
-        }
-        return true;
-    }
-
     private Student buildStudent(ResultSet resultSet) throws SQLException {
         Student student = new Student();
         student.setId(resultSet.getInt("ID"));
         student.setUsername(resultSet.getString("USERNAME"));
         student.setPassword(resultSet.getString("PASSWORD"));
         student.setMail(resultSet.getString("MAIL"));
-        student.setRole(getRole(resultSet.getInt("ROLE_ID")));
+        student.setRole(roleRepository.getRole(resultSet.getInt("ROLE_ID")));
         student.setLastName(resultSet.getString("LAST_NAME"));
         student.setFirstName(resultSet.getString("FIRST_NAME"));
         student.setPlaceOfBirth(resultSet.getString("PLACE_OF_BIRTH"));
@@ -230,16 +176,5 @@ public class StudentRepositoryH2 implements StudentRepository {
         student.setIban(resultSet.getString("IBAN"));
         student.setBirthday(resultSet.getDate("BIRTHDAY").toLocalDate());
         return student;
-    }
-
-    private Integer generateId() throws SQLException {
-        int id = 0;
-        try (ResultSet rs = connection.result(generateId)) {
-            if (rs.next()) {
-                id = rs.getInt(1);
-            }
-        }
-        connection.commit();
-        return id + 1;
     }
 }

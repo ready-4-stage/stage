@@ -6,15 +6,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import stage.common.model.*;
 import stage.server.user.UserAlreadyExistsException;
+import stage.server.user.UserRepository;
 
 @Log4j2
 @Service
 public class StudentService {
     private final StudentRepository repository;
+    private final UserRepository userRepository;
 
     @Autowired
-    public StudentService(StudentRepository repository) {
+    public StudentService(StudentRepository repository, UserRepository userRepository) {
         this.repository = repository;
+        this.userRepository = userRepository;
     }
 
     public List<Student> getStudents() {
@@ -36,7 +39,7 @@ public class StudentService {
     public Integer addUser(Student student) {
         // TODO: authentication (admin only)
 
-        if (!repository.isUniqueUsername(student.getUsername())) {
+        if (!userRepository.isUniqueUserName(student.getUsername())) {
             throw new UserAlreadyExistsException();
         }
 

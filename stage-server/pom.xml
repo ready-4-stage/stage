@@ -12,11 +12,8 @@
 
     <artifactId>stage-server</artifactId>
 
-    <properties>
-        <h2.version>1.4.200</h2.version>
-    </properties>
-
     <dependencies>
+        <!-- Brings spring, commons-io, jackson and lombok. -->
         <dependency>
             <groupId>stage</groupId>
             <artifactId>stage-common</artifactId>
@@ -26,7 +23,6 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <version>${h2.version}</version>
         </dependency>
     </dependencies>
 

@@ -38,9 +38,13 @@ public class SqlConnection {
     }
 
     @PreDestroy
-    public void closeConnection() throws SQLException {
-        if (isConnected()) {
-            connection.close();
+    public void destroy() {
+        try {
+            if (isConnected()) {
+                connection.close();
+            }
+        } catch (SQLException e) {
+            log.error("Unable to close connection: {}", e.getMessage());
         }
     }
 

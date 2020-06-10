@@ -40,7 +40,9 @@ public class SqlConnection {
     @PreDestroy
     public void destroy() {
         try {
-            connection.close();
+            if (isConnected()) {
+                connection.close();
+            }
         } catch (SQLException e) {
             log.error("Unable to close connection: {}", e.getMessage());
         }

@@ -3,6 +3,7 @@ package stage.server.student;
 import java.util.List;
 
 import stage.common.model.*;
+import stage.server.Repository;
 
 /**
  * // TODO description
@@ -11,7 +12,7 @@ import stage.common.model.*;
  * Tobias Tappert
  * @since 1.0.0
  */
-interface StudentRepository {
+public interface StudentRepository extends Repository {
     List<Student> getStudents();
 
     Student getStudent(Integer id);
@@ -22,13 +23,8 @@ interface StudentRepository {
 
     void deleteStudent(Integer id);
 
+    @Deprecated(since = "1.0.0", forRemoval = true)
     Integer getId(String username);
-
-    Integer getId(Role role);
-
-    Role getRole(Integer id);
-
-    boolean isUniqueUsername(String username);
 
     default Student getStudent(String username) {
         return getStudent(getId(username));

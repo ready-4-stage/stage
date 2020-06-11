@@ -1,32 +1,34 @@
 package stage.server.student;
 
 import java.util.*;
-
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import lombok.extern.log4j.Log4j2;
 import stage.common.model.*;
-import stage.server.authentication.aop.RequireAdmin;
 import stage.server.user.UserAlreadyExistsException;
+import stage.server.user.UserRepository;
 
 @Log4j2
 @Service
 public class StudentService {
     private final StudentRepository repository;
+    private final UserRepository userRepository;
 
     @Autowired
-    public StudentService(StudentRepository repository) {
+    public StudentService(StudentRepository repository, UserRepository userRepository) {
         this.repository = repository;
+        this.userRepository = userRepository;
     }
 
-    @RequireAdmin
     public List<Student> getStudents() {
+        // TODO: authentication (admin + teacher only)
+
         return anonymize(repository.getStudents());
     }
 
-    @RequireAdmin
     public Student getStudent(String username) {
+        // TODO: authentication (admin + teacher only)
+
         Student student = getStudentByIdOrUsername(username);
         if (student == null) {
             throw new StudentNotFoundException();
@@ -34,9 +36,10 @@ public class StudentService {
         return anonymize(student);
     }
 
-    @RequireAdmin
     public Integer addUser(Student student) {
-        if (!repository.isUniqueUsername(student.getUsername())) {
+        // TODO: authentication (admin only)
+
+        if (!userRepository.isUniqueUserName(student.getUsername())) {
             throw new UserAlreadyExistsException();
         }
 
@@ -46,8 +49,9 @@ public class StudentService {
         return repository.addStudent(student);
     }
 
-    @RequireAdmin
     public void updateStudent(String id, Student newStudent) {
+        // TODO: authentication (admin only)
+
         Student oldStudent = getStudentByIdOrUsername(id);
         if (oldStudent == null) {
             throw new StudentNotFoundException();
@@ -59,8 +63,9 @@ public class StudentService {
         updateStudentByIdOrUsername(id, oldStudent, newStudent);
     }
 
-    @RequireAdmin
     public void deleteStudent(String id) {
+        // TODO: authentication (admin only)
+
         Student student = getStudentByIdOrUsername(id);
         if (student == null) {
             throw new StudentNotFoundException();

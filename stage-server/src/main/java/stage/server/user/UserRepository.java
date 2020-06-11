@@ -1,7 +1,9 @@
 package stage.server.user;
 
+import java.sql.SQLException;
 import java.util.List;
 import stage.common.model.User;
+import stage.server.Repository;
 
 /**
  * // TODO description
@@ -10,12 +12,14 @@ import stage.common.model.User;
  * Tobias Tappert
  * @since 1.0.0
  */
-public interface UserRepository {
+public interface UserRepository extends Repository {
     List<User> getUsers();
 
-    <T extends User> T getUser(Integer id);
+    User getUser(Integer id);
 
     Integer addUser(User user);
+
+    Integer addUser(User user, Integer id);
 
     void updateUser(Integer id, User newUser);
 
@@ -23,19 +27,7 @@ public interface UserRepository {
 
     Integer getId(String userName);
 
-    boolean isUniqueUsername(String username);
+    boolean isUniqueUserName(String userName);
 
-    Integer generateId();
-
-    default <T extends User> T getUser(String userName) {
-        return getUser(getId(userName));
-    }
-
-    default void updateUser(String userName, User newUser) {
-        updateUser(getId(userName), newUser);
-    }
-
-    default void deleteUser(String userName) {
-        deleteUser(getId(userName));
-    }
+    Integer generateId() throws SQLException;
 }

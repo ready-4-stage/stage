@@ -1,4 +1,4 @@
-UPDATE USER
+UPDATE USERS
 SET USERNAME = ?,
     PASSWORD = ?,
     MAIL     = ?,

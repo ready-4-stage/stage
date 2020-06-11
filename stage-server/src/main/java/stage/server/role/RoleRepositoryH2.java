@@ -1,15 +1,14 @@
 package stage.server.role;
 
+import java.sql.*;
+import javax.annotation.PostConstruct;
+
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import stage.common.FileUtil;
 import stage.common.model.Role;
 import stage.server.database.SqlConnection;
-
-import javax.annotation.PostConstruct;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 /**
  * Repository for {@link Role} data models.
@@ -32,9 +31,9 @@ public class RoleRepositoryH2 implements RoleRepository {
     }
 
     @PostConstruct
-    @Override
     public void onInitialize() {
-        String createRoleTable = FileUtil.readFile("sql/role/role_table_create.sql");
+        String createRoleTable = FileUtil.readFile(
+            "sql/role/role_table_create.sql");
         try {
             sqlConnection.update(createRoleTable);
             sqlConnection.commit();
@@ -60,7 +59,8 @@ public class RoleRepositoryH2 implements RoleRepository {
     @Override
     public Integer getRoleId(Role role) {
         int id = -1;
-        try (ResultSet rs = sqlConnection.result(selectRoleIdSql, role.name().toUpperCase())) {
+        try (ResultSet rs = sqlConnection.result(selectRoleIdSql,
+            role.name().toUpperCase())) {
             if (rs.next()) {
                 id = rs.getInt("ID");
             }

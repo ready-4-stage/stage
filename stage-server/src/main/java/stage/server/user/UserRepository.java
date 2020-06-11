@@ -2,8 +2,8 @@ package stage.server.user;
 
 import java.sql.SQLException;
 import java.util.List;
+
 import stage.common.model.User;
-import stage.server.Repository;
 
 /**
  * // TODO description
@@ -12,7 +12,7 @@ import stage.server.Repository;
  * Tobias Tappert
  * @since 1.0.0
  */
-public interface UserRepository extends Repository {
+public interface UserRepository {
     List<User> getUsers();
 
     User getUser(Integer id);

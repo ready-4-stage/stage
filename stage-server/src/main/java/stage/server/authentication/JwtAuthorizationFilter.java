@@ -6,6 +6,9 @@ import java.util.stream.Collectors;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.SignatureException;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -13,9 +16,19 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.util.StringUtils;
 
-import io.jsonwebtoken.*;
-import lombok.extern.log4j.Log4j2;
-
+/**
+ * The {@link JwtAuthorizationFilter} filters every incoming request and checks
+ * if the token is valid.
+ *
+ * @author Julian Drees
+ * @author Tobias Fuchs
+ * @author Yannick Kirschen
+ * @author Cevin Steve Oehne
+ * @author Tobias Tappert
+ * @implNote The logic has been taken and transformed from
+ * https://www.javainuse.com/spring/boot-jwt.
+ * @since 1.0.0
+ */
 @Log4j2
 class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     private final TokenParserService tokenParserService;
@@ -52,31 +65,16 @@ class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 Jws<Claims> parsedToken = tokenParserService.parseToken(token);
 
                 String username = parsedToken.getBody().getSubject();
-                List<GrantedAuthority> authorities = ((List<?>) parsedToken.getBody()
-                    .get("rol")).stream()
-                    .map(authority -> new SimpleGrantedAuthority(
-                        (String) authority))
-                    .collect(Collectors.toList());
+                List<GrantedAuthority> authorities = ((List<?>) parsedToken.getBody().get(
+                    "rol")).stream().map(
+                    authority -> new SimpleGrantedAuthority(
+                        (String) authority)).collect(Collectors.toList());
 
                 if (!StringUtils.isEmpty(username)) {
                     return new UsernamePasswordAuthenticationToken(username,
                         null, authorities);
                 }
-            } catch (ExpiredJwtException e) {
-                log.warn("Request to parse expired JWT : {} failed : {}", token,
-                    e.getMessage());
-                tokenCacheService.removeToken(token);
-            } catch (UnsupportedJwtException e) {
-                log.warn("Request to parse unsupported JWT : {} failed : {}",
-                    token, e.getMessage());
-                tokenCacheService.removeToken(token);
-            } catch (MalformedJwtException e) {
-                log.warn("Request to parse invalid JWT : {} failed : {}", token,
-                    e.getMessage());
-                tokenCacheService.removeToken(token);
-            } catch (IllegalArgumentException e) {
-                log.warn("Request to parse empty or null JWT : {} failed : {}",
-                    token, e.getMessage());
+            } catch (ExpiredJwtException | UnsupportedJwtException | MalformedJwtException | IllegalArgumentException | SignatureException e) {
                 tokenCacheService.removeToken(token);
             }
         }

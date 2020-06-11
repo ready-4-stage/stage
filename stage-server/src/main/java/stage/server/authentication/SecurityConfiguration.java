@@ -7,9 +7,22 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.*;
 import org.springframework.security.config.http.SessionCreationPolicy;
 
+/**
+ * The {@link SecurityConfiguration} configures the security of the entire REST
+ * service. All endpoints under "/v1" are filtered by the {@link
+ * JwtAuthorizationFilter}.
+ *
+ * @author Julian Drees
+ * @author Tobias Fuchs
+ * @author Yannick Kirschen
+ * @author Cevin Steve Oehne
+ * @author Tobias Tappert
+ * @implNote The logic has been taken and transformed from
+ * https://www.javainuse.com/spring/boot-jwt.
+ * @since 1.0.0
+ */
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled = true)
-@SuppressWarnings("unused")
 class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private final TokenProperties tokenProperties;
     private final TokenParserService tokenParserService;
@@ -28,22 +41,14 @@ class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.cors()
-            .and()
-            .csrf()
-            .disable()
-            .authorizeRequests()
-            .antMatchers(tokenProperties.getPublicUrl())
-            .permitAll()
-            .anyRequest()
-            .authenticated()
-            .and()
-            .addFilter(new JwtAuthenticationFilter(authenticationManager(),
-                tokenProperties, tokenCacheService))
-            .addFilter(new JwtAuthorizationFilter(authenticationManager(),
-                tokenParserService, tokenCacheService))
-            .sessionManagement()
-            .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        http.cors().and().csrf().disable().authorizeRequests().antMatchers(
+            tokenProperties.getPublicUrl()).permitAll().anyRequest().authenticated().and().addFilter(
+            new JwtAuthenticationFilter(authenticationManager(),
+                tokenProperties, tokenCacheService)).addFilter(
+            new JwtAuthorizationFilter(authenticationManager(),
+                tokenParserService,
+                tokenCacheService)).sessionManagement().sessionCreationPolicy(
+            SessionCreationPolicy.STATELESS);
     }
 
     @Override

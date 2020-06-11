@@ -1,9 +1,11 @@
 package stage.server.student;
 
 import java.util.*;
-import lombok.extern.log4j.Log4j2;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import lombok.extern.log4j.Log4j2;
 import stage.common.model.*;
 import stage.server.user.UserAlreadyExistsException;
 import stage.server.user.UserRepository;
@@ -60,7 +62,7 @@ public class StudentService {
         newStudent.setId(oldStudent.getId());
         newStudent.setRole(oldStudent.getRole());
 
-        updateStudentByIdOrUsername(id, oldStudent, newStudent);
+        updateStudent(oldStudent.getId(), oldStudent, newStudent);
     }
 
     public void deleteStudent(String id) {
@@ -84,60 +86,53 @@ public class StudentService {
         }
     }
 
-    private void updateStudentByIdOrUsername(String username,
-        Student oldStudent, Student newStudent) {
-        // TODO: replace exception by something else
-        try {
-            Integer id = Integer.parseInt(username);
-
-            if (newStudent.getId() == null) {
-                newStudent.setId(oldStudent.getId());
-            }
-
-            if (newStudent.getUsername() == null) {
-                newStudent.setUsername(oldStudent.getUsername());
-            }
-
-            if (newStudent.getPassword() == null) {
-                newStudent.setPassword(oldStudent.getPassword());
-            }
-
-            if (newStudent.getMail() == null) {
-                newStudent.setMail(oldStudent.getMail());
-            }
-
-            if (newStudent.getLastName() == null) {
-                newStudent.setLastName(oldStudent.getLastName());
-            }
-
-            if (newStudent.getFirstName() == null) {
-                newStudent.setFirstName(oldStudent.getFirstName());
-            }
-
-            if (newStudent.getPlaceOfBirth() == null) {
-                newStudent.setPlaceOfBirth(oldStudent.getPlaceOfBirth());
-            }
-
-            if (newStudent.getPhone() == null) {
-                newStudent.setPhone(oldStudent.getPhone());
-            }
-
-            if (newStudent.getAddress() == null) {
-                newStudent.setAddress(oldStudent.getAddress());
-            }
-
-            if (newStudent.getIban() == null) {
-                newStudent.setIban(oldStudent.getIban());
-            }
-
-            if (newStudent.getBirthday() == null) {
-                newStudent.setBirthday(oldStudent.getBirthday());
-            }
-
-            repository.updateStudent(id, oldStudent, newStudent);
-        } catch (NumberFormatException e) {
-            repository.updateStudent(username, oldStudent, newStudent);
+    private void updateStudent(Integer id, Student oldStudent,
+        Student newStudent) {
+        if (newStudent.getId() == null) {
+            newStudent.setId(oldStudent.getId());
         }
+
+        if (newStudent.getUsername() == null) {
+            newStudent.setUsername(oldStudent.getUsername());
+        }
+
+        if (newStudent.getPassword() == null) {
+            newStudent.setPassword(oldStudent.getPassword());
+        }
+
+        if (newStudent.getMail() == null) {
+            newStudent.setMail(oldStudent.getMail());
+        }
+
+        if (newStudent.getLastName() == null) {
+            newStudent.setLastName(oldStudent.getLastName());
+        }
+
+        if (newStudent.getFirstName() == null) {
+            newStudent.setFirstName(oldStudent.getFirstName());
+        }
+
+        if (newStudent.getPlaceOfBirth() == null) {
+            newStudent.setPlaceOfBirth(oldStudent.getPlaceOfBirth());
+        }
+
+        if (newStudent.getPhone() == null) {
+            newStudent.setPhone(oldStudent.getPhone());
+        }
+
+        if (newStudent.getAddress() == null) {
+            newStudent.setAddress(oldStudent.getAddress());
+        }
+
+        if (newStudent.getIban() == null) {
+            newStudent.setIban(oldStudent.getIban());
+        }
+
+        if (newStudent.getBirthday() == null) {
+            newStudent.setBirthday(oldStudent.getBirthday());
+        }
+
+        repository.updateStudent(id, oldStudent, newStudent);
     }
 
     private void deleteStudentByIdOrUsername(String username) {

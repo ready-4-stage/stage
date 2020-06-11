@@ -6,8 +6,8 @@ import org.springframework.stereotype.Component;
 import stage.server.authentication.AuthenticationService;
 
 /**
- * The {@link RequireAdminAspect} joins a method annotated with {@link
- * RequireAdmin} with an execution that takes place before the method
+ * The {@link RequireAdminOrTeacherAspect} joins a method annotated with {@link
+ * RequireAdminOrTeacher} with an execution that takes place before the method
  * execution.
  *
  * @author Julian Drees
@@ -19,16 +19,16 @@ import stage.server.authentication.AuthenticationService;
  */
 @Aspect
 @Component
-public class RequireAdminAspect {
+public class RequireAdminOrTeacherAspect {
     private final AuthenticationService authentication;
 
     @Autowired
-    public RequireAdminAspect(AuthenticationService authentication) {
+    public RequireAdminOrTeacherAspect(AuthenticationService authentication) {
         this.authentication = authentication;
     }
 
-    @Before("@annotation(stage.server.authentication.aop.RequireAdmin)")
-    public void requireAdmin() {
-        authentication.requireAdmin();
+    @Before("@annotation(stage.server.authentication.aop.RequireAdminOrTeacher)")
+    public void adminOrTeacher() {
+        authentication.requireAdminOrTeacher();
     }
 }

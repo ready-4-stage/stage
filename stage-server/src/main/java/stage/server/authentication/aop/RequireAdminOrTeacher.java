@@ -3,8 +3,9 @@ package stage.server.authentication.aop;
 import java.lang.annotation.*;
 
 /**
- * Methods annotated with {@link RequireAdmin} can only be executed if the
- * currently logged in user is admin. Otherwise a 403 is returned.
+ * Methods annotated with {@link RequireAdminOrTeacher} can only be executed if
+ * the currently logged in user is admin or teacher. Otherwise a 403 is
+ * returned.
  *
  * @author Julian Drees
  * @author Tobias Fuchs
@@ -15,5 +16,5 @@ import java.lang.annotation.*;
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface RequireAdmin {
+public @interface RequireAdminOrTeacher {
 }

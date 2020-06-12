@@ -39,16 +39,17 @@ public class LessonRepositoryH2 implements LessonRepository {
     private final StudentRepository studentRepository;
     private final RoomRepository roomRepository;
     private final LessonTypeRepository lessonTypeRepository;
-    private final TeacherRepository teacherRepository;
+    //todo
+//    private final TeacherRepository teacherRepository;
 
 
     @Autowired
-    public LessonRepositoryH2(SqlConnection connection, StudentRepository studentRepository, RoomRepository roomRepository, LessonTypeRepository lessonTypeRepository, TeacherRepositroy teacherRepositroy) {
+    public LessonRepositoryH2(SqlConnection connection, StudentRepository studentRepository, RoomRepository roomRepository , LessonTypeRepository lessonTypeRepository /*TeacherRepositroy teacherRepositroy*/) {
         this.connection = connection;
         this.studentRepository = studentRepository;
         this.roomRepository = roomRepository;
         this.lessonTypeRepository = lessonTypeRepository;
-        this.teacherRepository = teacherRepository;
+//        this.teacherRepository = teacherRepository;
 
         initialFill = readFile("sql/initial_fill.sql");
         lessonDelete = readFile("sql/lesson/lesson_delete.sql");
@@ -154,14 +155,14 @@ public class LessonRepositoryH2 implements LessonRepository {
         lesson.setBegin(LocalDateTime.from(resultSet.getDate("BEGIN").toLocalDate()));
         lesson.setEnd(LocalDateTime.from(resultSet.getDate("END").toLocalDate()));
         lesson.setRoom((roomRepository.getRoom(resultSet.getInt("ROOM_ID"))));
-        lesson.setTeacher(teacherRepository.getTeacher(resultSet.getInt("TEACHER_ID")));
+        //todo
+//        lesson.setTeacher(teacherRepository.getTeacher(resultSet.getInt("TEACHER_ID")));
         lesson.setType((lessonTypeRepository.getLessonType(resultSet.getInt("ROOM_ID"))));
         lesson.setContent(resultSet.getString("CONTENT"));
         lesson.setStudents(studentRepository.getStudents());
         return lesson;
     }
 
-    @Override
     public Integer generateId(String username) {
         int id = -1;
         try (ResultSet rs = connection.result(generateId,

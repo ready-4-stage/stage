@@ -12,22 +12,38 @@
 
     <artifactId>stage-common</artifactId>
 
-    <properties>
-        <commons.io.version>2.7</commons.io.version>
-    </properties>
-
     <dependencies>
+        <!-- Spring! -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
+        <!-- Validate POJOs via annotations. -->
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+        </dependency>
+
+        <!-- Implementation of the validation. -->
+        <dependency>
+            <groupId>org.hibernate.validator</groupId>
+            <artifactId>hibernate-validator</artifactId>
+        </dependency>
+
+        <!-- Process the annotations. -->
+        <dependency>
+            <groupId>org.hibernate.validator</groupId>
+            <artifactId>hibernate-validator-annotation-processor</artifactId>
+        </dependency>
+
+        <!-- Read file into String. -->
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>${commons.io.version}</version>
         </dependency>
 
+        <!-- Spice up Java. -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>

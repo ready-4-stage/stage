@@ -20,11 +20,11 @@ For the server: see [stage-server](https://github.com/ready-4-stage/stage/tree/m
 
 ## Developers
 
-- @jlndrs
-- @DerFox4
-- @yannickkirschen
-- @CSO0815
-- @tobiastappert1995
+- [@jlndrs](https://github.com/jlndrs)
+- [@DerFox4](https://github.com/DerFox4)
+- [@yannickkirschen](https://github.com/yannickkirschen)
+- [@CSO0815](https://github.com/CSO0815)
+- [@tobiastappert1995](https://github.com/tobiastappert1995)
 
 ## License
 

@@ -1,0 +1,9 @@
+{
+    "properties": [
+        {
+            "name": "jdbc",
+            "type": "java.lang.String",
+            "description": "The JDBC URL to use to connect to the database."
+        }
+    ]
+}

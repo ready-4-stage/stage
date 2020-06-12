@@ -1,10 +1,12 @@
 package stage.server.database;
 
+import java.sql.*;
 import javax.annotation.*;
 
-import java.sql.*;
-import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+
+import lombok.extern.log4j.Log4j2;
 
 /**
  * // TODO description
@@ -18,19 +20,31 @@ import org.springframework.context.annotation.Configuration;
 public class SqlConnection {
     private Connection connection;
 
+    @Value("${stage.db.user}")
+    private String user;
+
+    @Value("${stage.db.pwd}")
+    private String password;
+
+    @Value("${jdbc}")
+    private String jdbc;
+
     @PostConstruct
-    @SuppressWarnings("java:S2115")
     public void openConnection() throws SQLException {
         if (!isConnected()) {
-            connection = DriverManager.getConnection("jdbc:h2:mem:");
+            connection = DriverManager.getConnection(jdbc, user, password);
             connection.setAutoCommit(false);
         }
     }
 
     @PreDestroy
-    public void closeConnection() throws SQLException {
-        if (isConnected()) {
-            connection.close();
+    public void destroy() {
+        try {
+            if (isConnected()) {
+                connection.close();
+            }
+        } catch (SQLException e) {
+            log.error("Unable to close connection: {}", e.getMessage());
         }
     }
 

@@ -18,7 +18,7 @@ public class RoomService {
     }
 
     public List<Room> getRooms() {
-        return (repository.getRooms());
+        return repository.getRooms();
     }
 
     public Room getRoom(Integer id) {

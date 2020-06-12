@@ -1,0 +1,5 @@
+SELECT ID,
+       NAME,
+       SUITABILITY
+FROM ROOM
+WHERE ID = ?;

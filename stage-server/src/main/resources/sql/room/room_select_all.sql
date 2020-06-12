@@ -1,0 +1,4 @@
+SELECT ID,
+       NAME,
+       SUITABILITY
+FROM ROOM

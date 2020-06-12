@@ -2,6 +2,7 @@ package stage.server.room;
 
 import java.util.List;
 import stage.common.model.Room;
+import stage.server.Repository;
 
 /**
  * // TODO description
@@ -10,7 +11,7 @@ import stage.common.model.Room;
  * Tobias Tappert
  * @since 1.0.0
  */
-public interface RoomRepository {
+public interface RoomRepository extends Repository {
     List<Room> getRooms();
 
     Room getRoom(Integer id);

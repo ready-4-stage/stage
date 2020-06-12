@@ -2,6 +2,7 @@ package stage.server.lesson.type;
 
 import java.util.List;
 import stage.common.model.LessonType;
+import stage.server.Repository;
 
 /**
  * // TODO description
@@ -10,7 +11,7 @@ import stage.common.model.LessonType;
  * Tobias Tappert
  * @since 1.0.0
  */
-public interface LessonTypeRepository {
+public interface LessonTypeRepository extends Repository {
     List<LessonType> getLessonTypes();
 
     LessonType getLessonType(Integer id);

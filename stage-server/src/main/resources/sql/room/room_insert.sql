@@ -1,2 +1,2 @@
-INSERT INTO ROOM (ID, Name, suitability)
+INSERT INTO ROOM (ID, NAME, SUITABILITY)
 VALUES (?, ?, ?);

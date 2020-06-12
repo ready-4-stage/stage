@@ -1,27 +1,24 @@
 package stage.server.lesson;
 
+import java.sql.*;
+import java.time.LocalDateTime;
+import java.util.*;
+import javax.annotation.PostConstruct;
+
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import stage.common.model.Lesson;
 import stage.server.database.SqlConnection;
 import stage.server.lesson.type.LessonTypeRepository;
-import stage.server.room.RoomRepository;
-import stage.server.student.StudentRepository;
-
-import javax.annotation.PostConstruct;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import stage.server.room.RoomService;
+import stage.server.student.StudentService;
 
 import static stage.common.FileUtil.readFile;
 
 @Log4j2
 @Repository
 public class LessonRepositoryH2 implements LessonRepository {
-
     private final String initialFill;
     private final String lessonDelete;
     private final String selectLessons;
@@ -34,22 +31,22 @@ public class LessonRepositoryH2 implements LessonRepository {
     private final String generateId;
     private final String roomSelectById;
 
-
     private final SqlConnection connection;
-    private final StudentRepository studentRepository;
-    private final RoomRepository roomRepository;
+    private final StudentService studentService;
+    private final RoomService roomService;
     private final LessonTypeRepository lessonTypeRepository;
     //todo
-//    private final TeacherRepository teacherRepository;
-
+    //    private final TeacherRepository teacherRepository;
 
     @Autowired
-    public LessonRepositoryH2(SqlConnection connection, StudentRepository studentRepository, RoomRepository roomRepository , LessonTypeRepository lessonTypeRepository /*TeacherRepositroy teacherRepositroy*/) {
+    public LessonRepositoryH2(SqlConnection connection,
+        StudentService studentService, RoomService roomService,
+        LessonTypeRepository lessonTypeRepository /*TeacherRepositroy teacherRepositroy*/) {
         this.connection = connection;
-        this.studentRepository = studentRepository;
-        this.roomRepository = roomRepository;
+        this.studentService = studentService;
+        this.roomService = roomService;
         this.lessonTypeRepository = lessonTypeRepository;
-//        this.teacherRepository = teacherRepository;
+        //        this.teacherRepository = teacherRepository;
 
         initialFill = readFile("sql/initial_fill.sql");
         lessonDelete = readFile("sql/lesson/lesson_delete.sql");
@@ -60,19 +57,22 @@ public class LessonRepositoryH2 implements LessonRepository {
         generateId = readFile("sql/generate_Lesson_id.sql");
         selectStudents = readFile("sql/student/student_select_all.sql");
         teacherSelectById = readFile("sql/teacher/teacher_select_id.sql");
-        lessonTypeSelectById = readFile("sql/lessonType/lessonType_select_id.sql");
+        lessonTypeSelectById = readFile(
+            "sql/lessonType/lessonType_select_id.sql");
         roomSelectById = readFile("sql/room/room_select_by_id.sql");
     }
 
-    @Override
     @PostConstruct
     public void onInitialize() {
-        String createLessonTableSql = readFile("sql/lesson/lesson_table_create.sql");
-        String createStudentTableSql = readFile("sql/student/student_table_create.sql");
-        String createTeacherTableSql = readFile("sql/teacher/teacher_table_create.sql");
+        String createLessonTableSql = readFile(
+            "sql/lesson/lesson_table_create.sql");
+        String createStudentTableSql = readFile(
+            "sql/student/student_table_create.sql");
+        String createTeacherTableSql = readFile(
+            "sql/teacher/teacher_table_create.sql");
         String createRoomTableSql = readFile("sql/room/room_table_create.sql");
-        String createLessonTypeTableSql = readFile("sql/lessonType/lessonType_table_create.sql");
-
+        String createLessonTypeTableSql = readFile(
+            "sql/lessonType/lessonType_table_create.sql");
 
         try {
             connection.update(createStudentTableSql);
@@ -119,7 +119,6 @@ public class LessonRepositoryH2 implements LessonRepository {
         return lesson;
     }
 
-
     @Override
     public Integer addLesson(Lesson lesson) {
         Integer id = -1;
@@ -140,8 +139,8 @@ public class LessonRepositoryH2 implements LessonRepository {
     @Override
     public void updateLesson(Integer id, Lesson lesson) {
         try {
-            connection.update(lessonUpdate, lesson.getBegin(),
-                lesson.getEnd(), lesson.getRoom(), lesson.getTeacher(), lesson.getType(),
+            connection.update(lessonUpdate, lesson.getBegin(), lesson.getEnd(),
+                lesson.getRoom(), lesson.getTeacher(), lesson.getType(),
                 lesson.getContent(), id);
 
         } catch (SQLException ex) {
@@ -152,14 +151,17 @@ public class LessonRepositoryH2 implements LessonRepository {
     private Lesson buildLesson(ResultSet resultSet) throws SQLException {
         Lesson lesson = new Lesson();
         lesson.setId(resultSet.getInt("ID"));
-        lesson.setBegin(LocalDateTime.from(resultSet.getDate("BEGIN").toLocalDate()));
-        lesson.setEnd(LocalDateTime.from(resultSet.getDate("END").toLocalDate()));
-        lesson.setRoom((roomRepository.getRoom(resultSet.getInt("ROOM_ID"))));
+        lesson.setBegin(
+            LocalDateTime.from(resultSet.getDate("BEGIN").toLocalDate()));
+        lesson.setEnd(
+            LocalDateTime.from(resultSet.getDate("END").toLocalDate()));
+        lesson.setRoom((roomService.getRoom(resultSet.getInt("ROOM_ID"))));
         //todo
-//        lesson.setTeacher(teacherRepository.getTeacher(resultSet.getInt("TEACHER_ID")));
-        lesson.setType((lessonTypeRepository.getLessonType(resultSet.getInt("ROOM_ID"))));
+        //        lesson.setTeacher(teacherRepository.getTeacher(resultSet.getInt("TEACHER_ID")));
+        lesson.setType(
+            (lessonTypeRepository.getLessonType(resultSet.getInt("ROOM_ID"))));
         lesson.setContent(resultSet.getString("CONTENT"));
-        lesson.setStudents(studentRepository.getStudents());
+        lesson.setStudents(studentService.getStudents());
         return lesson;
     }
 

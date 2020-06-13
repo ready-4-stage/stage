@@ -1,9 +1,8 @@
 package stage.server.lesson;
 
-import stage.common.model.Lesson;
-import stage.server.Repository;
-
 import java.util.List;
+
+import stage.common.model.Lesson;
 
 /**
  * // TODO description
@@ -12,7 +11,7 @@ import java.util.List;
  * Tobias Tappert
  * @since 1.0.0
  */
-public interface LessonRepository extends Repository {
+public interface LessonRepository {
     List<Lesson> getLessons();
 
     Lesson getLesson(Integer id);

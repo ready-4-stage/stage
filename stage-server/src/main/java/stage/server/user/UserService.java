@@ -1,21 +1,24 @@
 package stage.server.user;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import stage.common.model.User;
-
 import java.util.regex.Pattern;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import stage.common.authentication.*;
+import stage.common.model.User;
+
 @Service
-public class UserService {
-
+public class UserService implements JwtUserDatabase {
     private final Pattern numericPattern = Pattern.compile("-?\\d+(\\.\\d+)?");
-
-    private final UserRepository userRepository;
+    private final UserRepository repository;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public UserService(UserRepository repository) {
+        this.repository = repository;
+    }
+
+    public Integer getId(String username) {
+        return repository.getId(username);
     }
 
     public User getUser(String id) {
@@ -23,13 +26,21 @@ public class UserService {
         if (isNumeric(id)) {
             numericId = Integer.parseInt(id);
         } else {
-            numericId = userRepository.getId(id);
+            numericId = repository.getId(id);
         }
-        return userRepository.getUser(numericId);
+        return repository.getUser(numericId);
+    }
+
+    public boolean isUniqueUserName(String username) {
+        return repository.isUniqueUserName(username);
     }
 
     private boolean isNumeric(String check) {
         return numericPattern.matcher(check).matches();
     }
 
+    @Override
+    public JwtUser assertAndGet(String username) {
+        return getUser(username);
+    }
 }

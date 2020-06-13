@@ -1,8 +1,8 @@
 package stage.server.student;
 
 import java.util.List;
-import stage.common.model.*;
-import stage.server.Repository;
+
+import stage.common.model.Student;
 
 /**
  * // TODO description
@@ -11,7 +11,7 @@ import stage.server.Repository;
  * Tobias Tappert
  * @since 1.0.0
  */
-public interface StudentRepository extends Repository {
+interface StudentRepository {
     List<Student> getStudents();
 
     Student getStudent(Integer id);

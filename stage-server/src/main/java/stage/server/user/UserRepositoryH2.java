@@ -1,5 +1,9 @@
 package stage.server.user;
 
+import java.sql.*;
+import java.util.*;
+import javax.annotation.PostConstruct;
+
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -8,20 +12,13 @@ import stage.common.model.User;
 import stage.server.database.SqlConnection;
 import stage.server.role.RoleRepository;
 
-import javax.annotation.PostConstruct;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-
 /**
- * Repository for {@link stage.common.model.User} data models.
- * Uses H2 sql connection
+ * Repository for {@link stage.common.model.User} data models. Uses H2 sql
+ * connection
  */
 @Log4j2
 @Service
 public class UserRepositoryH2 implements UserRepository {
-
     private final String uniqueUserNameSql;
     private final String generateIdSql;
     private final String deleteUserSql;
@@ -31,14 +28,18 @@ public class UserRepositoryH2 implements UserRepository {
     private final String insertUserSql;
     private final String updateUserSql;
 
-    private final SqlConnection sqlConnection;
+    private final SqlConnection connection;
+
+    // TODO: Replace by service
     private final RoleRepository roleRepository;
 
     @Autowired
-    public UserRepositoryH2(SqlConnection sqlConnection, RoleRepository roleRepository) {
-        this.sqlConnection = sqlConnection;
+    public UserRepositoryH2(SqlConnection connection,
+        RoleRepository roleRepository) {
+        this.connection = connection;
         this.roleRepository = roleRepository;
-        uniqueUserNameSql = FileUtil.readFile("sql/user/user_username_unique.sql");
+        uniqueUserNameSql = FileUtil.readFile(
+            "sql/user/user_username_unique.sql");
         generateIdSql = FileUtil.readFile("sql/generate_id.sql");
         deleteUserSql = FileUtil.readFile("sql/user/user_delete.sql");
         selectUserIdSql = FileUtil.readFile("sql/user/user_select_id.sql");
@@ -49,15 +50,16 @@ public class UserRepositoryH2 implements UserRepository {
     }
 
     @PostConstruct
-    @Override
-    public void onInitialize() {
-        String createRoleTable = FileUtil.readFile("sql/role/role_table_create.sql");
-        String createUserTable = FileUtil.readFile("sql/user/user_table_create.sql");
+    public void initialize() {
+        String createRoleTable = FileUtil.readFile(
+            "sql/role/role_table_create.sql");
+        String createUserTable = FileUtil.readFile(
+            "sql/user/user_table_create.sql");
         try {
-            sqlConnection.update(createRoleTable);
-            sqlConnection.update(createUserTable);
+            connection.update(createRoleTable);
+            connection.update(createUserTable);
 
-            sqlConnection.commit();
+            connection.commit();
         } catch (SQLException ex) {
             log.error(ex);
         }
@@ -65,11 +67,12 @@ public class UserRepositoryH2 implements UserRepository {
 
     @Override
     public boolean isUniqueUserName(String userName) {
-        try (ResultSet rs = this.sqlConnection.result(uniqueUserNameSql, userName.toUpperCase())) {
+        try (ResultSet rs = connection.result(uniqueUserNameSql,
+            userName.toUpperCase())) {
             if (rs.next()) {
                 return false;
             }
-            sqlConnection.commit();
+            connection.commit();
         } catch (SQLException ex) {
             log.error(ex);
         }
@@ -79,11 +82,11 @@ public class UserRepositoryH2 implements UserRepository {
     @Override
     public List<User> getUsers() {
         List<User> users = new ArrayList<>();
-        try (ResultSet rs = sqlConnection.result(selectAllUsersSql)) {
+        try (ResultSet rs = connection.result(selectAllUsersSql)) {
             while (rs.next()) {
                 users.add(buildUser(rs));
             }
-            sqlConnection.commit();
+            connection.commit();
         } catch (SQLException ex) {
             log.error(ex);
         }
@@ -93,11 +96,11 @@ public class UserRepositoryH2 implements UserRepository {
     @Override
     public User getUser(Integer id) {
         User user = null;
-        try (ResultSet resultSet = sqlConnection.result(selectUserByIdSql, id)) {
+        try (ResultSet resultSet = connection.result(selectUserByIdSql, id)) {
             if (resultSet.next()) {
                 user = buildUser(resultSet);
             }
-            sqlConnection.commit();
+            connection.commit();
         } catch (SQLException ex) {
             log.error(ex);
         }
@@ -119,10 +122,10 @@ public class UserRepositoryH2 implements UserRepository {
     @Override
     public Integer addUser(User user, Integer id) {
         try {
-            sqlConnection.update(insertUserSql, id, user.getUsername(),
+            connection.update(insertUserSql, id, user.getUsername(),
                 user.getPassword(), roleRepository.getRoleId(user.getRole()),
                 user.getMail());
-            sqlConnection.commit();
+            connection.commit();
         } catch (SQLException ex) {
             log.error(ex);
         }
@@ -134,9 +137,10 @@ public class UserRepositoryH2 implements UserRepository {
         User oldUser = getUser(id);
         assert oldUser != null;
         try {
-            sqlConnection.update(updateUserSql, newUser.getUsername(), newUser.getPassword(),
-                newUser.getMail(), roleRepository.getRoleId(oldUser.getRole()), id);
-            sqlConnection.commit();
+            connection.update(updateUserSql, newUser.getUsername(),
+                newUser.getPassword(), newUser.getMail(),
+                roleRepository.getRoleId(oldUser.getRole()), id);
+            connection.commit();
         } catch (SQLException ex) {
             log.error(ex);
         }
@@ -145,8 +149,8 @@ public class UserRepositoryH2 implements UserRepository {
     @Override
     public void deleteUser(Integer id) {
         try {
-            sqlConnection.update(deleteUserSql, id);
-            sqlConnection.commit();
+            connection.update(deleteUserSql, id);
+            connection.commit();
         } catch (SQLException ex) {
             log.error(ex);
         }
@@ -155,11 +159,12 @@ public class UserRepositoryH2 implements UserRepository {
     @Override
     public Integer getId(String userName) {
         int id = -1;
-        try (ResultSet rs = sqlConnection.result(selectUserIdSql, userName.toUpperCase())) {
+        try (ResultSet rs = connection.result(selectUserIdSql,
+            userName.toUpperCase())) {
             if (rs.next()) {
                 id = rs.getInt("ID");
             }
-            sqlConnection.commit();
+            connection.commit();
         } catch (SQLException ex) {
             log.error(ex);
         }
@@ -169,11 +174,11 @@ public class UserRepositoryH2 implements UserRepository {
     @Override
     public Integer generateId() throws SQLException {
         int id = 0;
-        try (ResultSet rs = this.sqlConnection.result(generateIdSql)) {
+        try (ResultSet rs = connection.result(generateIdSql)) {
             if (rs.next()) {
                 id = rs.getInt(1);
             }
-            sqlConnection.commit();
+            connection.commit();
         }
         return id + 1;
     }

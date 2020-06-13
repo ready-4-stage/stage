@@ -1,20 +1,19 @@
 package stage.server.room;
 
+import java.sql.*;
+import java.util.*;
+import javax.annotation.PostConstruct;
+
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 import stage.common.model.Room;
 import stage.server.database.SqlConnection;
-
-import javax.annotation.PostConstruct;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 import static stage.common.FileUtil.readFile;
 
 @Log4j2
-
+@Repository
 public class RoomRepositoryH2 implements RoomRepository {
     private final String initialFill;
     private final String selectRooms;
@@ -99,8 +98,8 @@ public class RoomRepositoryH2 implements RoomRepository {
     @Override
     public void updateRoom(Integer id, Room room) {
         try {
-            connection.update(roomUpdate, room.getSuitability(),
-                room.getName(), id);
+            connection.update(roomUpdate, room.getSuitability(), room.getName(),
+                id);
             connection.commit();
         } catch (SQLException ex) {
             log.error(ex);

@@ -1,14 +1,14 @@
 package stage.server.student;
 
-import javax.annotation.PostConstruct;
-
 import java.sql.Date;
 import java.sql.*;
 import java.util.*;
+import javax.annotation.PostConstruct;
+
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import stage.common.model.*;
+import stage.common.model.Student;
 import stage.server.database.SqlConnection;
 import stage.server.role.RoleRepository;
 import stage.server.user.UserRepository;
@@ -24,7 +24,7 @@ import static stage.common.FileUtil.readFile;
  */
 @Log4j2
 @Repository
-public class StudentRepositoryH2 implements StudentRepository {
+class StudentRepositoryH2 implements StudentRepository {
     private final String initialFill;
     private final String selectStudents;
     private final String selectStudentById;
@@ -34,11 +34,14 @@ public class StudentRepositoryH2 implements StudentRepository {
     private final String userSelectId;
 
     private final SqlConnection connection;
+
+    // TODO: Replace repositories by services
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
 
     @Autowired
-    public StudentRepositoryH2(SqlConnection connection, UserRepository userRepository, RoleRepository roleRepository) {
+    StudentRepositoryH2(SqlConnection connection, UserRepository userRepository,
+        RoleRepository roleRepository) {
         this.connection = connection;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
@@ -53,8 +56,7 @@ public class StudentRepositoryH2 implements StudentRepository {
     }
 
     @PostConstruct
-    @Override
-    public void onInitialize() {
+    public void initialize() {
         String createRoleTableSql = readFile("sql/role/role_table_create.sql");
         String createUserTableSql = readFile("sql/user/user_table_create.sql");
         String createStudentTableSql = readFile(
@@ -66,7 +68,7 @@ public class StudentRepositoryH2 implements StudentRepository {
             connection.update(createStudentTableSql);
 
             // TODO: darf nur in einem Service ausgeführt werden, ansonsten aufteilen
-            // connection.update(initialFill);
+            connection.update(initialFill);
             connection.commit();
         } catch (SQLException e) {
             log.error("SQL error: {}", e.getMessage());

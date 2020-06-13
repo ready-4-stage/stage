@@ -1,9 +1,14 @@
 package stage.common.model;
 
 /**
- * // TODO description
+ * According to the ERD, the {@link Role} defines the status of a {@link User}
+ * and the rights they have.
  *
- * @author Julian Drees, Tobias Fuchs, Yannick Kirschen, Cevin Steve Oehne, Tobias Tappert
+ * @author Julian Drees
+ * @author Tobias Fuchs
+ * @author Yannick Kirschen
+ * @author Cevin Steve Oehne
+ * @author Tobias Tappert
  * @since 1.0.0
  */
 public enum Role {

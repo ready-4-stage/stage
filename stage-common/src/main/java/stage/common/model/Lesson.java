@@ -7,10 +7,16 @@ import javax.validation.constraints.*;
 import lombok.*;
 
 /**
- * // TODO description
+ * According to the ERD, the {@link Lesson} is represents a single and unique
+ * music lesson. A lesson is defined by a time it takes place, a {@link Room}, a
+ * {@link Teacher} that gives the lesson and at least one {@link Student} taking
+ * part.
  *
- * @author Julian Drees, Tobias Fuchs, Yannick Kirschen, Cevin Steve Oehne,
- * Tobias Tappert
+ * @author Julian Drees
+ * @author Tobias Fuchs
+ * @author Yannick Kirschen
+ * @author Cevin Steve Oehne
+ * @author Tobias Tappert
  * @since 1.0.0
  */
 @Data

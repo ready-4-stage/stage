@@ -16,10 +16,13 @@ import stage.server.user.UserRepository;
 import static stage.common.FileUtil.readFile;
 
 /**
- * // TODO description
+ * The {@link StudentRepositoryH2} provides access to an H2 database.
  *
- * @author Julian Drees, Tobias Fuchs, Yannick Kirschen, Cevin Steve Oehne,
- * Tobias Tappert
+ * @author Julian Drees
+ * @author Tobias Fuchs
+ * @author Yannick Kirschen
+ * @author Cevin Steve Oehne
+ * @author Tobias Tappert
  * @since 1.0.0
  */
 @Log4j2
@@ -31,7 +34,6 @@ class StudentRepositoryH2 implements StudentRepository {
     private final String studentInsert;
     private final String studentUpdate;
     private final String studentDelete;
-    private final String userSelectId;
 
     private final SqlConnection connection;
 
@@ -52,7 +54,6 @@ class StudentRepositoryH2 implements StudentRepository {
         studentInsert = readFile("sql/student/student_insert.sql");
         studentUpdate = readFile("sql/student/student_update.sql");
         studentDelete = readFile("sql/student/student_delete.sql");
-        userSelectId = readFile("sql/user/user_select_id.sql");
     }
 
     @PostConstruct
@@ -146,21 +147,6 @@ class StudentRepositoryH2 implements StudentRepository {
         } catch (SQLException ex) {
             log.error(ex);
         }
-    }
-
-    @Override
-    public Integer getId(String username) {
-        int id = -1;
-        try (ResultSet rs = connection.result(userSelectId,
-            username.toUpperCase())) {
-            if (rs.next()) {
-                id = rs.getInt("ID");
-            }
-            connection.commit();
-        } catch (SQLException ex) {
-            log.error(ex);
-        }
-        return id;
     }
 
     private Student buildStudent(ResultSet resultSet) throws SQLException {

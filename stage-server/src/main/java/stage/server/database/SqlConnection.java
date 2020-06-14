@@ -3,16 +3,27 @@ package stage.server.database;
 import java.sql.*;
 import javax.annotation.*;
 
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
-import lombok.extern.log4j.Log4j2;
-
 /**
- * // TODO description
+ * The {@link SqlConnection} provides access to the database by providing an SQL
+ * connection.
+ * <p>
+ * In order to properly run this class, there must be the following properties
+ * set either via VM arguments or via an entry in <code>application.yml</code>:
+ * <ul>
+ *     <li><code>stage.db.user=USER</code> The username to use to connect to the database.</li>
+ *     <li><code>stage.db.pwd=PASSWORD</code> The password to use to connect to the database.</li>
+ *     <li><code>jdbc=JDBC</code> The JDBC string to use to connect to the database.</li>
+ * </ul>
  *
- * @author Julian Drees, Tobias Fuchs, Yannick Kirschen, Cevin Steve Oehne,
- * Tobias Tappert
+ * @author Julian Drees
+ * @author Tobias Fuchs
+ * @author Yannick Kirschen
+ * @author Cevin Steve Oehne
+ * @author Tobias Tappert
  * @since 1.0.0
  */
 @Log4j2
@@ -48,10 +59,19 @@ public class SqlConnection {
         }
     }
 
+    /**
+     * @return <code>true</code>, if the connection is open. Otherwise
+     * <code>false</code>.
+     */
     public boolean isConnected() {
         return connection != null;
     }
 
+    /**
+     * Commits all changes.
+     *
+     * @throws SQLException if an database error occurs.
+     */
     public void commit() throws SQLException {
         connection.commit();
     }
@@ -63,6 +83,8 @@ public class SqlConnection {
      * @param query      sql query
      * @param parameters sql parameters (varargs or array)
      * @return an executable statement
+     *
+     * @throws SQLException if an database error occurs.
      */
     @SuppressWarnings("java:S2095") // We'll use try-with later on in the code
     public PreparedStatement prepareStatement(String query,
@@ -74,12 +96,28 @@ public class SqlConnection {
         return ps;
     }
 
+    /**
+     * Performs a SQL prepared statement.
+     *
+     * @param query      The query t perform.
+     * @param parameters The parameters to put into the query (in order).
+     * @throws SQLException if an database error occurs.
+     */
     public void update(String query, Object... parameters) throws SQLException {
         try (PreparedStatement ps = prepareStatement(query, parameters)) {
             ps.executeUpdate();
         }
     }
 
+    /**
+     * Performs a SQL prepared query statement.
+     *
+     * @param query      The query t perform.
+     * @param parameters The parameters to put into the query (in order).
+     * @return The {@link ResultSet} of the query.
+     *
+     * @throws SQLException if an database error occurs.
+     */
     public ResultSet result(String query, Object... parameters)
         throws SQLException {
         return prepareStatement(query, parameters).executeQuery();

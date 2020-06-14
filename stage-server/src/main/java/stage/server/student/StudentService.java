@@ -68,17 +68,11 @@ public class StudentService {
             throw new StudentNotFoundException();
         }
 
-        deleteStudentByIdOrUsername(id);
+        repository.deleteStudent(userService.getId(id));
     }
 
     private Student getStudentByIdOrUsername(String username) {
-        // TODO: replace exception by something else
-        try {
-            Integer id = Integer.parseInt(username);
-            return repository.getStudent(id);
-        } catch (NumberFormatException e) {
-            return repository.getStudent(username);
-        }
+        return repository.getStudent(userService.getId(username));
     }
 
     private void updateStudent(Integer id, Student oldStudent,
@@ -128,16 +122,6 @@ public class StudentService {
         }
 
         repository.updateStudent(id, oldStudent, newStudent);
-    }
-
-    private void deleteStudentByIdOrUsername(String username) {
-        // TODO: replace exception by something else
-        try {
-            Integer id = Integer.parseInt(username);
-            repository.deleteStudent(id);
-        } catch (NumberFormatException e) {
-            repository.deleteStudent(username);
-        }
     }
 
     private List<Student> anonymize(List<Student> users) {

@@ -5,10 +5,14 @@ import javax.validation.constraints.*;
 import lombok.*;
 
 /**
- * // TODO description
+ * According to the ERD, a {@link Room} represents a real classroom that can be
+ * booked for a {@link Lesson}.
  *
- * @author Julian Drees, Tobias Fuchs, Yannick Kirschen, Cevin Steve Oehne,
- * Tobias Tappert
+ * @author Julian Drees
+ * @author Tobias Fuchs
+ * @author Yannick Kirschen
+ * @author Cevin Steve Oehne
+ * @author Tobias Tappert
  * @since 1.0.0
  */
 @Data

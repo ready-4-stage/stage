@@ -6,10 +6,16 @@ import javax.validation.constraints.*;
 import lombok.*;
 
 /**
- * // TODO description
+ * According to the ERD, the {@link Student} represents a music student working
+ * with the software.
+ * <p>
+ * It extends {@link User} for some additional attributes.
  *
- * @author Julian Drees, Tobias Fuchs, Yannick Kirschen, Cevin Steve Oehne,
- * Tobias Tappert
+ * @author Julian Drees
+ * @author Tobias Fuchs
+ * @author Yannick Kirschen
+ * @author Cevin Steve Oehne
+ * @author Tobias Tappert
  * @since 1.0.0
  */
 @EqualsAndHashCode(callSuper = true)

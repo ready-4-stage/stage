@@ -9,8 +9,11 @@ import org.springframework.stereotype.Service;
  * The {@link ObjectValidator} uses the <code>javax-validation</code> api to
  * validate a POJO based on its annotations.
  *
- * @author Julian Drees, Tobias Fuchs, Yannick Kirschen, Cevin Steve Oehne,
- * Tobias Tappert
+ * @author Julian Drees
+ * @author Tobias Fuchs
+ * @author Yannick Kirschen
+ * @author Cevin Steve Oehne
+ * @author Tobias Tappert
  * @since 1.0.0
  */
 @Service

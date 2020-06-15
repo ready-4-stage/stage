@@ -62,7 +62,7 @@ public class AuthenticationService {
     }
 
     /**
-     * Checks if there is a user logged in.If not, a {@link ForbiddenException}
+     * Checks if there is a user logged in. If not, a {@link ForbiddenException}
      * is thrown.
      *
      * @see Role

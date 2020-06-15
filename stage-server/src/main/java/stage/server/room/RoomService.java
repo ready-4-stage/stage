@@ -45,7 +45,7 @@ public class RoomService {
         if (room == null) {
             throw new RoomNotFoundException();
         }
-        delteRoom(id);
+        repository.deleteRoom(id);
     }
 
     private void updateRoomById(Room oldRoom, Room newRoom) {

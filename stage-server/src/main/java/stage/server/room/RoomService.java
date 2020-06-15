@@ -40,7 +40,7 @@ public class RoomService {
         updateRoomById(oldRoom, room);
     }
 
-    public void delteRoom(Integer id) {
+    public void deleteRoom(Integer id) {
         Room room = getRoom(id);
         if (room == null) {
             throw new RoomNotFoundException();

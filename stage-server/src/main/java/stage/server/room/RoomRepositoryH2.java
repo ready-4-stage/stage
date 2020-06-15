@@ -125,7 +125,7 @@ public class RoomRepositoryH2 implements RoomRepository {
     }
 
     private Integer generateId() throws SQLException {
-        Integer id = 0;
+        int id = 0;
         try (ResultSet rs = connection.result(generateId)) {
             if (rs.next()) {
                 id = rs.getInt(1);

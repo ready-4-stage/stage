@@ -28,7 +28,6 @@ import static stage.common.FileUtil.readFile;
 @Log4j2
 @Repository
 class StudentRepositoryH2 implements StudentRepository {
-    private final String initialFill;
     private final String selectStudents;
     private final String selectStudentById;
     private final String studentInsert;
@@ -48,7 +47,6 @@ class StudentRepositoryH2 implements StudentRepository {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
 
-        initialFill = readFile("sql/initial_fill.sql");
         selectStudents = readFile("sql/student/student_select_all.sql");
         selectStudentById = readFile("sql/student/student_select_by_id.sql");
         studentInsert = readFile("sql/student/student_insert.sql");
@@ -67,9 +65,6 @@ class StudentRepositoryH2 implements StudentRepository {
             connection.update(createRoleTableSql);
             connection.update(createUserTableSql);
             connection.update(createStudentTableSql);
-
-            // TODO: darf nur in einem Service ausgeführt werden, ansonsten aufteilen
-            connection.update(initialFill);
             connection.commit();
         } catch (SQLException e) {
             log.error("SQL error: {}", e.getMessage());

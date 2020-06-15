@@ -15,7 +15,6 @@ import static stage.common.FileUtil.readFile;
 @Log4j2
 @Repository
 public class RoomRepositoryH2 implements RoomRepository {
-    private final String initialFill;
     private final String selectRooms;
     private final String selectRoomById;
     private final String roomInsert;
@@ -28,8 +27,6 @@ public class RoomRepositoryH2 implements RoomRepository {
     @Autowired
     public RoomRepositoryH2(SqlConnection connection) {
         this.connection = connection;
-
-        initialFill = readFile("sql/initial_fill.sql");
         roomDelete = readFile("sql/room/room_delete.sql");
         roomInsert = readFile("sql/room/room_insert.sql");
         selectRooms = readFile("sql/room/room_select_all.sql");
@@ -43,8 +40,6 @@ public class RoomRepositoryH2 implements RoomRepository {
         String createRoomTableSql = readFile("sql/room/room_table_create.sql");
         try {
             connection.update(createRoomTableSql);
-            connection.update(initialFill);
-
             connection.commit();
         } catch (SQLException e) {
             log.error("SQL error: {}", e.getMessage());

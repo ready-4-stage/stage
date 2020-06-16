@@ -7,6 +7,8 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
+import static stage.common.FileUtil.readFile;
+
 /**
  * The {@link SqlConnection} provides access to the database by providing an SQL
  * connection.
@@ -29,6 +31,8 @@ import org.springframework.context.annotation.Configuration;
 @Log4j2
 @Configuration
 public class SqlConnection {
+    private final String initialFill;
+
     private Connection connection;
 
     @Value("${stage.db.user}")
@@ -40,11 +44,18 @@ public class SqlConnection {
     @Value("${jdbc}")
     private String jdbc;
 
+    public SqlConnection() {
+        initialFill = readFile("sql/initial_fill.sql");
+    }
+
     @PostConstruct
     public void openConnection() throws SQLException {
         if (!isConnected()) {
             connection = DriverManager.getConnection(jdbc, user, password);
             connection.setAutoCommit(false);
+
+            update(initialFill);
+            commit();
         }
     }
 

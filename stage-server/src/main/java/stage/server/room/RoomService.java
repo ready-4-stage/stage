@@ -1,11 +1,12 @@
 package stage.server.room;
 
+import java.util.List;
+
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import stage.common.model.Room;
-
-import java.util.List;
+import stage.server.authentication.aop.*;
 
 @Log4j2
 @Service
@@ -17,10 +18,12 @@ public class RoomService {
         this.repository = repository;
     }
 
+    @RequireAdminOrTeacher
     public List<Room> getRooms() {
         return repository.getRooms();
     }
 
+    @RequireAdminOrTeacher
     public Room getRoom(Integer id) {
         Room room = repository.getRoom(id);
         if (room == null) {
@@ -29,23 +32,26 @@ public class RoomService {
         return room;
     }
 
+    @RequireAdmin
     public Integer addRoom(Room room) {
         room.setId(null);
         return repository.addRoom(room);
     }
 
+    @RequireAdmin
     public void updateRoom(Integer id, Room room) {
         Room oldRoom = getRoom(id);
         room.setId(oldRoom.getId());
         updateRoomById(oldRoom, room);
     }
 
-    public void delteRoom(Integer id) {
+    @RequireAdmin
+    public void deleteRoom(Integer id) {
         Room room = getRoom(id);
         if (room == null) {
             throw new RoomNotFoundException();
         }
-        delteRoom(id);
+        repository.deleteRoom(id);
     }
 
     private void updateRoomById(Room oldRoom, Room newRoom) {

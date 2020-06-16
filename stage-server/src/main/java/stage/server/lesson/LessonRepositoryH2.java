@@ -19,7 +19,6 @@ import static stage.common.FileUtil.readFile;
 @Log4j2
 @Repository
 public class LessonRepositoryH2 implements LessonRepository {
-    private final String initialFill;
     private final String lessonDelete;
     private final String selectLessons;
     private final String selectLessonById;
@@ -47,8 +46,6 @@ public class LessonRepositoryH2 implements LessonRepository {
         this.roomService = roomService;
         this.lessonTypeRepository = lessonTypeRepository;
         //        this.teacherRepository = teacherRepository;
-
-        initialFill = readFile("sql/initial_fill.sql");
         lessonDelete = readFile("sql/lesson/lesson_delete.sql");
         lessonInsert = readFile("sql/lesson/lesson_insert.sql");
         selectLessons = readFile("sql/lesson/lesson_select_all.sql");
@@ -80,8 +77,6 @@ public class LessonRepositoryH2 implements LessonRepository {
             connection.update(createRoomTableSql);
             connection.update(createLessonTypeTableSql);
             connection.update(createLessonTableSql);
-
-            connection.update(initialFill);
 
             connection.commit();
         } catch (SQLException e) {

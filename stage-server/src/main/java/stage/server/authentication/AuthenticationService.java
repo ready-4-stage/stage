@@ -60,4 +60,16 @@ public class AuthenticationService {
             throw new ForbiddenException();
         }
     }
+
+    /**
+     * Checks if there is a user logged in. If not, a {@link ForbiddenException}
+     * is thrown.
+     *
+     * @see Role
+     */
+    public void requireAnybody() {
+        if (getCurrentRole() == null) {
+            throw new ForbiddenException();
+        }
+    }
 }

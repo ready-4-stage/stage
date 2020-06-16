@@ -1,12 +1,10 @@
 package stage.server.room;
 
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import stage.common.model.Room;
-
-import java.util.List;
-
 
 @RestController
 @RequestMapping("/v1/room")
@@ -34,13 +32,12 @@ public class RoomController {
     }
 
     @PatchMapping("/{id}")
-    public void patch(@PathVariable("id") Integer id,
-                      @RequestBody Room room) {
+    public void patch(@PathVariable("id") Integer id, @RequestBody Room room) {
         service.updateRoom(id, room);
     }
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable("id") Integer id) {
-        service.delteRoom(id);
+        service.deleteRoom(id);
     }
 }

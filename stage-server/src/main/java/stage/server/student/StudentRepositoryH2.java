@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import stage.common.model.Student;
 import stage.server.database.SqlConnection;
-import stage.server.role.RoleRepository;
+import stage.server.role.RoleService;
 import stage.server.user.UserRepository;
 
 import static stage.common.FileUtil.readFile;
@@ -28,7 +28,6 @@ import static stage.common.FileUtil.readFile;
 @Log4j2
 @Repository
 class StudentRepositoryH2 implements StudentRepository {
-    private final String initialFill;
     private final String selectStudents;
     private final String selectStudentById;
     private final String studentInsert;
@@ -37,18 +36,17 @@ class StudentRepositoryH2 implements StudentRepository {
 
     private final SqlConnection connection;
 
-    // TODO: Replace repositories by services
+    // TODO: Replace UserRepository by service
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
+    private final RoleService roleService;
 
     @Autowired
     StudentRepositoryH2(SqlConnection connection, UserRepository userRepository,
-        RoleRepository roleRepository) {
+        RoleService roleService) {
         this.connection = connection;
         this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
+        this.roleService = roleService;
 
-        initialFill = readFile("sql/initial_fill.sql");
         selectStudents = readFile("sql/student/student_select_all.sql");
         selectStudentById = readFile("sql/student/student_select_by_id.sql");
         studentInsert = readFile("sql/student/student_insert.sql");
@@ -67,9 +65,6 @@ class StudentRepositoryH2 implements StudentRepository {
             connection.update(createRoleTableSql);
             connection.update(createUserTableSql);
             connection.update(createStudentTableSql);
-
-            // TODO: darf nur in einem Service ausgeführt werden, ansonsten aufteilen
-            connection.update(initialFill);
             connection.commit();
         } catch (SQLException e) {
             log.error("SQL error: {}", e.getMessage());
@@ -155,7 +150,7 @@ class StudentRepositoryH2 implements StudentRepository {
         student.setUsername(resultSet.getString("USERNAME"));
         student.setPassword(resultSet.getString("PASSWORD"));
         student.setMail(resultSet.getString("MAIL"));
-        student.setRole(roleRepository.getRole(resultSet.getInt("ROLE_ID")));
+        student.setRole(roleService.getRole(resultSet.getInt("ROLE_ID")));
         student.setLastName(resultSet.getString("LAST_NAME"));
         student.setFirstName(resultSet.getString("FIRST_NAME"));
         student.setPlaceOfBirth(resultSet.getString("PLACE_OF_BIRTH"));

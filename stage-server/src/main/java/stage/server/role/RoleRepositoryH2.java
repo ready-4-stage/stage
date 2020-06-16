@@ -16,7 +16,6 @@ import stage.server.database.SqlConnection;
 @Log4j2
 @Service
 public class RoleRepositoryH2 implements RoleRepository {
-
     private final SqlConnection sqlConnection;
 
     private final String selectRoleByIdSql;

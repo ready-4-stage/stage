@@ -1,24 +1,28 @@
 package stage.server.lesson.type;
+
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Repository;
 import stage.common.model.LessonType;
 import stage.server.database.SqlConnection;
+
 import javax.annotation.PostConstruct;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
 import static stage.common.FileUtil.readFile;
+
 @Log4j2
 @Repository
 public class LessonTypeRepositoryH2 implements LessonTypeRepository {
     private final SqlConnection connection;
-    String lessonTypeDelete;
-    String generateId;
-    String lessonTypeInsert;
-    String selectLessonTypes;
-    String selectLessonTypeById;
-    String lessonTypeUpdate;
+    private String lessonTypeDelete;
+    private String generateId;
+    private String lessonTypeInsert;
+    private String selectLessonTypes;
+    private String selectLessonTypeById;
+    private String lessonTypeUpdate;
 
     public LessonTypeRepositoryH2(SqlConnection connection) {
         this.connection = connection;

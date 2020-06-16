@@ -1,16 +1,16 @@
 package stage.server.lesson.type;
 
-import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import stage.common.model.LessonType;
 
 import java.util.List;
 
-@Log4j2
 @Service
 public class LessonTypeService {
     private final LessonTypeRepository lessonTypeRepository;
 
+    @Autowired
     public LessonTypeService(LessonTypeRepository lessonTypeRepository) {
         this.lessonTypeRepository = lessonTypeRepository;
     }
@@ -19,19 +19,11 @@ public class LessonTypeService {
         return lessonTypeRepository.getLessonTypes();
     }
 
-    LessonType getLessonType(Integer id) {
+    public LessonType getLessonType(Integer id) {
         return checkIsNull(id);
     }
 
-    private LessonType checkIsNull(Integer id) {
-        LessonType lessonType = lessonTypeRepository.getLessonType(id);
-        if (lessonType == null) {
-            throw new LessonTypeNotFoundException();
-        }
-        return lessonType;
-    }
-
-    void updateLessonType(Integer id, LessonType lessonType) {
+    public void updateLessonType(Integer id, LessonType lessonType) {
         LessonType oldLesson = checkIsNull(id);
         lessonType.setId(oldLesson.getId());
         updateLessonTypeById(oldLesson, lessonType);
@@ -47,7 +39,7 @@ public class LessonTypeService {
         lessonTypeRepository.updateLessonType(id, newLessonType);
     }
 
-    void deleteLessonType(Integer id) {
+    public void deleteLessonType(Integer id) {
         if (checkIsNotNullBoolean(id))
             lessonTypeRepository.deleteLessonType(id);
     }
@@ -64,5 +56,13 @@ public class LessonTypeService {
             return true;
         }
         throw new LessonTypeNotFoundException();
+    }
+
+    private LessonType checkIsNull(Integer id) {
+        LessonType lessonType = lessonTypeRepository.getLessonType(id);
+        if (lessonType == null) {
+            throw new LessonTypeNotFoundException();
+        }
+        return lessonType;
     }
 }

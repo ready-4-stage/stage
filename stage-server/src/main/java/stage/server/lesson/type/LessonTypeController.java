@@ -9,8 +9,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/v1/lessonType")
 public class LessonTypeController {
-
-    LessonTypeService service;
+    private LessonTypeService service;
 
     @Autowired
     public LessonTypeController(LessonTypeService service) {

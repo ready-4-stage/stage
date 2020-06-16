@@ -20,15 +20,11 @@ import static stage.common.FileUtil.readFile;
 @Repository
 public class LessonRepositoryH2 implements LessonRepository {
     private final String lessonDelete;
-    private final String selectLessons;
     private final String selectLessonById;
     private final String lessonInsert;
     private final String lessonUpdate;
     private final String selectStudents;
-    private final String teacherSelectById;
-    private final String lessonTypeSelectById;
     private final String generateId;
-    private final String roomSelectById;
 
     private final SqlConnection connection;
     private final StudentService studentService;
@@ -48,15 +44,10 @@ public class LessonRepositoryH2 implements LessonRepository {
         //        this.teacherRepository = teacherRepository;
         lessonDelete = readFile("sql/lesson/lesson_delete.sql");
         lessonInsert = readFile("sql/lesson/lesson_insert.sql");
-        selectLessons = readFile("sql/lesson/lesson_select_all.sql");
         selectLessonById = readFile("sql/lesson/lesson_select_by_id.sql");
         lessonUpdate = readFile("sql/lesson/lesson_update.sql");
-        generateId = readFile("sql/generate_Lesson_id.sql");
+        generateId = readFile("sql/lesson/generate_Lesson_id.sql");
         selectStudents = readFile("sql/student/student_select_all.sql");
-        teacherSelectById = readFile("sql/teacher/teacher_select_id.sql");
-        lessonTypeSelectById = readFile(
-            "sql/lessonType/lessonType_select_id.sql");
-        roomSelectById = readFile("sql/room/room_select_by_id.sql");
     }
 
     @PostConstruct
@@ -65,17 +56,11 @@ public class LessonRepositoryH2 implements LessonRepository {
             "sql/lesson/lesson_table_create.sql");
         String createStudentTableSql = readFile(
             "sql/student/student_table_create.sql");
-        String createTeacherTableSql = readFile(
-            "sql/teacher/teacher_table_create.sql");
         String createRoomTableSql = readFile("sql/room/room_table_create.sql");
-        String createLessonTypeTableSql = readFile(
-            "sql/lessonType/lessonType_table_create.sql");
 
         try {
             connection.update(createStudentTableSql);
-            connection.update(createTeacherTableSql);
             connection.update(createRoomTableSql);
-            connection.update(createLessonTypeTableSql);
             connection.update(createLessonTableSql);
 
             connection.commit();

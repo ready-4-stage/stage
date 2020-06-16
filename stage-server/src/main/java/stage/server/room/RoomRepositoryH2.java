@@ -22,7 +22,7 @@ public class RoomRepositoryH2 implements RoomRepository {
     private final String roomDelete;
     private final String generateId;
 
-    SqlConnection connection;
+    private final SqlConnection connection;
 
     @Autowired
     public RoomRepositoryH2(SqlConnection connection) {
@@ -32,7 +32,7 @@ public class RoomRepositoryH2 implements RoomRepository {
         selectRooms = readFile("sql/room/room_select_all.sql");
         selectRoomById = readFile("sql/room/room_select_by_id.sql");
         roomUpdate = readFile("sql/room/room_update.sql");
-        generateId = readFile("sql/room_generate_id.sql");
+        generateId = readFile("sql/room/room_generate_id.sql");
     }
 
     @PostConstruct

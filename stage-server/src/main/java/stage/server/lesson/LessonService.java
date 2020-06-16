@@ -11,13 +11,12 @@ import java.util.List;
 @Service
 public class LessonService {
 
-    LessonRepository repository;
+    private final LessonRepository repository;
 
     @Autowired
     public LessonService(LessonRepository repository) {
         this.repository = repository;
     }
-
 
     List<Lesson> getLessons() {
         return repository.getLessons();

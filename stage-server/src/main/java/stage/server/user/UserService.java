@@ -1,5 +1,6 @@
 package stage.server.user;
 
+import java.util.List;
 import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,10 @@ public class UserService implements JwtUserDatabase {
         return repository.getId(username);
     }
 
+    public List<User> getUsers() {
+        return repository.getUsers();
+    }
+
     public User getUser(String id) {
         Integer numericId;
         if (isNumeric(id)) {
@@ -29,6 +34,32 @@ public class UserService implements JwtUserDatabase {
             numericId = repository.getId(id);
         }
         return repository.getUser(numericId);
+    }
+
+    public Integer addUser(User user) {
+        if (!repository.isUniqueUserName(user.getUsername())) {
+            throw new UserAlreadyExistsException();
+        }
+        user.setId(null);
+        return repository.addUser(user);
+    }
+
+    public void updateUser(String id, User user) {
+        User oldUser = getUser(id);
+        if (oldUser == null) {
+            throw new UserNotFoundException();
+        }
+        user.setId(oldUser.getId());
+        user.setRole(oldUser.getRole());
+        repository.updateUser(oldUser.getId(), user);
+    }
+
+    public void deleteUser(String id) {
+        User user = getUser(id);
+        if (user == null) {
+            throw new UserNotFoundException();
+        }
+        repository.deleteUser(user.getId());
     }
 
     public boolean isUniqueUserName(String username) {

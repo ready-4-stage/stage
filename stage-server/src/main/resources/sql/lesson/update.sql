@@ -5,4 +5,6 @@ SET BEGIN         = ?,
     TEACHER_ID    = ?,
     LESSONTYPE_ID = ?,
     CONTENT       = ?
-    WHERE ID = ?;
+WHERE ID = ?;
+
+COMMIT;

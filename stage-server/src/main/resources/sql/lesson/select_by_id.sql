@@ -8,5 +8,4 @@ SELECT ID,
 FROM LESSON
 WHERE ID = ?;
 
-
-
+COMMIT;

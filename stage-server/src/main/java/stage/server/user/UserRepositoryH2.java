@@ -20,6 +20,8 @@ import static stage.common.FileUtil.readFile;
 @Log4j2
 @Service
 class UserRepositoryH2 implements UserRepository {
+    private final SqlConnection connection;
+
     private final String uniqueUsername;
     private final String delete;
     private final String selectId;
@@ -29,11 +31,10 @@ class UserRepositoryH2 implements UserRepository {
     private final String update;
     private final String sequence;
 
-    private final SqlConnection connection;
-
     @Autowired
     UserRepositoryH2(SqlConnection connection) {
         this.connection = connection;
+
         uniqueUsername = FileUtil.readFile("sql/user/username_unique.sql");
         delete = FileUtil.readFile("sql/user/delete.sql");
         selectId = FileUtil.readFile("sql/user/select_id.sql");

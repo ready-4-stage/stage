@@ -1,15 +1,13 @@
 package stage.server.lesson.type;
 
-import lombok.extern.log4j.Log4j2;
+import java.sql.*;
+import java.util.*;
+
 import org.springframework.stereotype.Repository;
+
+import lombok.extern.log4j.Log4j2;
 import stage.common.model.LessonType;
 import stage.server.database.SqlConnection;
-
-import javax.annotation.PostConstruct;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 import static stage.common.FileUtil.readFile;
 
@@ -17,31 +15,32 @@ import static stage.common.FileUtil.readFile;
 @Repository
 public class LessonTypeRepositoryH2 implements LessonTypeRepository {
     private final SqlConnection connection;
-    private String lessonTypeDelete;
-    private String generateId;
-    private String lessonTypeInsert;
-    private String selectLessonTypes;
-    private String selectLessonTypeById;
-    private String lessonTypeUpdate;
+
+    private final String delete;
+    private final String insert;
+    private final String select;
+    private final String selectById;
+    private final String update;
+    private final String sequence;
 
     public LessonTypeRepositoryH2(SqlConnection connection) {
         this.connection = connection;
-        lessonTypeDelete = readFile("sql/lessonType/lessonType_delete.sql");
-        generateId = readFile("sql/lessonType/generate_lessonType_id.sql");
-        lessonTypeInsert = readFile("sql/lessonType/lessonType_insert.sql");
-        selectLessonTypes = readFile("sql/lessonType/lessonType_select_all.sql");
-        selectLessonTypeById = readFile("sql/lessonType/lessonType_select_by_id.sql");
-        lessonTypeUpdate = readFile("sql/lessonType/lessonType_update.sql");
+
+        delete = readFile("sql/lessonType/delete.sql");
+        insert = readFile("sql/lessonType/insert.sql");
+        select = readFile("sql/lessonType/select.sql");
+        selectById = readFile("sql/lessonType/selectById.sql");
+        update = readFile("sql/lessonType/update.sql");
+        sequence = readFile("sql/lessonType/sequence.sql");
     }
 
     @Override
     public List<LessonType> getLessonTypes() {
         List<LessonType> lessonTypes = new ArrayList<>();
-        try (ResultSet resultSet = connection.result(selectLessonTypes)) {
+        try (ResultSet resultSet = connection.result(select)) {
             while (resultSet.next()) {
                 lessonTypes.add(buildLessonType(resultSet));
             }
-            connection.commit();
         } catch (SQLException ex) {
             log.error(ex);
         }
@@ -51,11 +50,10 @@ public class LessonTypeRepositoryH2 implements LessonTypeRepository {
     @Override
     public LessonType getLessonType(Integer id) {
         LessonType lessonType = null;
-        try (ResultSet resultSet = connection.result(selectLessonTypes, id)) {
+        try (ResultSet resultSet = connection.result(selectById, id)) {
             if (resultSet.next()) {
                 lessonType = buildLessonType(resultSet);
             }
-            connection.commit();
         } catch (SQLException ex) {
             log.error(ex);
         }
@@ -64,25 +62,22 @@ public class LessonTypeRepositoryH2 implements LessonTypeRepository {
 
     @Override
     public Integer addLessonType(LessonType lessonType) {
-
-        Integer id = -1;
-        try {
-            id = generateId();
-            connection.update(lessonTypeInsert, id, lessonType.getDescription());
-
-            connection.commit();
+        int id = -1;
+        try (ResultSet res = connection.result(sequence)) {
+            if (res.next()) {
+                id = res.getInt(1);
+                connection.update(insert, id, lessonType.getDescription());
+            }
         } catch (SQLException ex) {
             log.error(ex);
         }
         return id;
     }
 
-
     @Override
     public void updateLessonType(Integer id, LessonType newLessonType) {
         try {
-            connection.update(lessonTypeUpdate, newLessonType.getDescription());
-
+            connection.update(update, newLessonType.getDescription());
         } catch (SQLException ex) {
             log.error(ex);
         }
@@ -91,40 +86,17 @@ public class LessonTypeRepositoryH2 implements LessonTypeRepository {
     @Override
     public void deleteLessonType(Integer id) {
         try {
-            connection.update(lessonTypeDelete, id);
-            connection.commit();
+            connection.update(delete, id);
         } catch (SQLException ex) {
             log.error(ex);
         }
     }
 
-    @PostConstruct
-    public void onInitialize() {
-        String createLessonTypeTableSql = readFile(
-            "sql/lessonType/lessonType_table_create.sql");
-        try {
-            connection.update(createLessonTypeTableSql);
-            connection.commit();
-        } catch (SQLException e) {
-            log.error("SQL error: {}", e.getMessage());
-        }
-    }
-
-    private LessonType buildLessonType(ResultSet resultSet) throws SQLException {
+    private LessonType buildLessonType(ResultSet resultSet)
+        throws SQLException {
         LessonType lessonType = new LessonType();
         lessonType.setId(resultSet.getInt("ID"));
         lessonType.setDescription(resultSet.getString("DESCRIPTION"));
         return lessonType;
-    }
-
-    private Integer generateId() throws SQLException {
-        int id = 0;
-        try (ResultSet rs = connection.result(generateId)) {
-            if (rs.next()) {
-                id = rs.getInt(1);
-            }
-        }
-        connection.commit();
-        return id + 1;
     }
 }

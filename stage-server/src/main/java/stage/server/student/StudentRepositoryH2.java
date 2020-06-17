@@ -26,6 +26,8 @@ import static stage.common.FileUtil.readFile;
 @Log4j2
 @Repository
 class StudentRepositoryH2 implements StudentRepository {
+    private final SqlConnection connection;
+
     private final String select;
     private final String selectById;
     private final String selectByUsername;
@@ -33,8 +35,6 @@ class StudentRepositoryH2 implements StudentRepository {
     private final String update;
     private final String delete;
     private final String sequence;
-
-    private final SqlConnection connection;
 
     @Autowired
     StudentRepositoryH2(SqlConnection connection) {

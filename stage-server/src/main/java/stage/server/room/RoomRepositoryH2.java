@@ -15,6 +15,8 @@ import static stage.common.FileUtil.readFile;
 @Log4j2
 @Repository
 class RoomRepositoryH2 implements RoomRepository {
+    private final SqlConnection connection;
+
     private final String select;
     private final String selectById;
     private final String insert;
@@ -22,11 +24,10 @@ class RoomRepositoryH2 implements RoomRepository {
     private final String delete;
     private final String sequence;
 
-    private final SqlConnection connection;
-
     @Autowired
     RoomRepositoryH2(SqlConnection connection) {
         this.connection = connection;
+
         delete = readFile("sql/room/delete.sql");
         insert = readFile("sql/room/insert.sql");
         select = readFile("sql/room/select.sql");

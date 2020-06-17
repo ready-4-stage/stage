@@ -23,7 +23,7 @@ public class LessonService {
     }
 
     public Lesson getLesson(Integer id) {
-        return checkIsNull(id);
+        return repository.getLesson(id);
     }
 
     public Integer addLesson(Lesson lesson) {
@@ -32,7 +32,11 @@ public class LessonService {
     }
 
     public void updateLesson(Integer id, Lesson lesson) {
-        Lesson oldLesson = checkIsNull(id);
+        Lesson oldLesson = repository.getLesson(id);
+        if (oldLesson == null) {
+            throw new LessonNotFoundException();
+        }
+
         lesson.setId(oldLesson.getId());
         updateLessonById(oldLesson, lesson);
     }
@@ -43,13 +47,15 @@ public class LessonService {
         if (newLesson.getBegin() == null) {
             newLesson.setBegin(oldLesson.getBegin());
         }
+
         if (newLesson.getEnd() == null) {
             newLesson.setEnd(oldLesson.getEnd());
-
         }
+
         if (newLesson.getRoom() == null) {
             newLesson.setRoom(oldLesson.getRoom());
         }
+
         if (newLesson.getTeacher() == null) {
             newLesson.setTeacher(oldLesson.getTeacher());
         }
@@ -65,28 +71,16 @@ public class LessonService {
         if (newLesson.getContent() == null) {
             newLesson.setContent(oldLesson.getContent());
         }
+
         repository.updateLesson(id, newLesson);
     }
 
-    private Lesson checkIsNull(Integer id) {
+    void deleteLesson(Integer id) {
         Lesson lesson = repository.getLesson(id);
         if (lesson == null) {
             throw new LessonNotFoundException();
         }
-        return lesson;
-    }
 
-    private boolean checkIsNotNullBoolean(Integer id) {
-        Lesson lesson = repository.getLesson(id);
-        if (lesson != null) {
-            return true;
-        }
-        throw new LessonNotFoundException();
-    }
-
-    void deleteLesson(Integer id) {
-        if (checkIsNotNullBoolean(id)) {
-            repository.deleteLesson(id);
-        }
+        repository.deleteLesson(id);
     }
 }

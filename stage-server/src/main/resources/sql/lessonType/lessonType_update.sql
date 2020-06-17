@@ -1,3 +1,0 @@
-UPDATE LESSONTYPE
-SET     DESCRIPTION = ?
-WHERE   ID          = ?;

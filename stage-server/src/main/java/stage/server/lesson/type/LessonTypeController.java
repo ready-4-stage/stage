@@ -1,15 +1,16 @@
 package stage.server.lesson.type;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import stage.common.model.LessonType;
 
-import java.util.List;
+import stage.common.model.LessonType;
 
 @RestController
 @RequestMapping("/v1/lessonType")
 public class LessonTypeController {
-    private LessonTypeService service;
+    private final LessonTypeService service;
 
     @Autowired
     public LessonTypeController(LessonTypeService service) {
@@ -17,7 +18,7 @@ public class LessonTypeController {
     }
 
     @GetMapping
-    private List<LessonType> get() {
+    public List<LessonType> get() {
         return service.getLessonTypes();
     }
 
@@ -33,7 +34,7 @@ public class LessonTypeController {
 
     @PatchMapping("/{id}")
     public void patch(@PathVariable("id") Integer id,
-                      @RequestBody LessonType lessonType) {
+        @RequestBody LessonType lessonType) {
         service.updateLessonType(id, lessonType);
     }
 

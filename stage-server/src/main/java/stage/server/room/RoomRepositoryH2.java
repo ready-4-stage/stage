@@ -2,11 +2,11 @@ package stage.server.room;
 
 import java.sql.*;
 import java.util.*;
-import javax.annotation.PostConstruct;
 
-import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import lombok.extern.log4j.Log4j2;
 import stage.common.model.Room;
 import stage.server.database.SqlConnection;
 
@@ -14,61 +14,47 @@ import static stage.common.FileUtil.readFile;
 
 @Log4j2
 @Repository
-public class RoomRepositoryH2 implements RoomRepository {
-    private final String selectRooms;
-    private final String selectRoomById;
-    private final String roomInsert;
-    private final String roomUpdate;
-    private final String roomDelete;
-    private final String generateId;
+class RoomRepositoryH2 implements RoomRepository {
+    private final String select;
+    private final String selectById;
+    private final String insert;
+    private final String update;
+    private final String delete;
+    private final String sequence;
 
     private final SqlConnection connection;
 
     @Autowired
-    public RoomRepositoryH2(SqlConnection connection) {
+    RoomRepositoryH2(SqlConnection connection) {
         this.connection = connection;
-        roomDelete = readFile("sql/room/room_delete.sql");
-        roomInsert = readFile("sql/room/room_insert.sql");
-        selectRooms = readFile("sql/room/room_select_all.sql");
-        selectRoomById = readFile("sql/room/room_select_by_id.sql");
-        roomUpdate = readFile("sql/room/room_update.sql");
-        generateId = readFile("sql/room/room_generate_id.sql");
-    }
-
-    @PostConstruct
-    public void initialize() {
-        String createRoomTableSql = readFile("sql/room/room_table_create.sql");
-        try {
-            connection.update(createRoomTableSql);
-            connection.commit();
-        } catch (SQLException e) {
-            log.error("SQL error: {}", e.getMessage());
-        }
+        delete = readFile("sql/room/delete.sql");
+        insert = readFile("sql/room/insert.sql");
+        select = readFile("sql/room/select.sql");
+        selectById = readFile("sql/room/select_by_id.sql");
+        update = readFile("sql/room/update.sql");
+        sequence = readFile("sql/room/sequence.sql");
     }
 
     @Override
     public List<Room> getRooms() {
         List<Room> rooms = new ArrayList<>();
-        try (ResultSet resultSet = connection.result(selectRooms)) {
+        try (ResultSet resultSet = connection.result(select)) {
             while (resultSet.next()) {
                 rooms.add(buildRoom(resultSet));
             }
-            connection.commit();
         } catch (SQLException ex) {
             log.error(ex);
         }
-
         return rooms;
     }
 
     @Override
     public Room getRoom(Integer id) {
         Room room = null;
-        try (ResultSet resultSet = connection.result(selectRoomById, id)) {
+        try (ResultSet resultSet = connection.result(selectById, id)) {
             if (resultSet.next()) {
                 room = buildRoom(resultSet);
             }
-            connection.commit();
         } catch (SQLException ex) {
             log.error(ex);
         }
@@ -78,12 +64,13 @@ public class RoomRepositoryH2 implements RoomRepository {
     @Override
     public Integer addRoom(Room room) {
         Integer id = -1;
-        try {
-            id = generateId();
-            connection.update(roomInsert, id, room.getName(),
-                room.getSuitability());
-
-            connection.commit();
+        try (ResultSet res = connection.result(sequence)) {
+            if (res.next()) {
+                connection.update(insert, //
+                    id, //
+                    room.getName(), //
+                    room.getSuitability());
+            }
         } catch (SQLException ex) {
             log.error(ex);
         }
@@ -93,9 +80,10 @@ public class RoomRepositoryH2 implements RoomRepository {
     @Override
     public void updateRoom(Integer id, Room room) {
         try {
-            connection.update(roomUpdate, room.getSuitability(), room.getName(),
+            connection.update(update, //
+                room.getSuitability(), //
+                room.getName(), //
                 id);
-            connection.commit();
         } catch (SQLException ex) {
             log.error(ex);
         }
@@ -104,8 +92,7 @@ public class RoomRepositoryH2 implements RoomRepository {
     @Override
     public void deleteRoom(Integer id) {
         try {
-            connection.update(roomDelete, id);
-            connection.commit();
+            connection.update(delete, id);
         } catch (SQLException ex) {
             log.error(ex);
         }
@@ -117,16 +104,5 @@ public class RoomRepositoryH2 implements RoomRepository {
         room.setName(resultSet.getString("NAME"));
         room.setSuitability(resultSet.getString("SUITABILITY"));
         return room;
-    }
-
-    private Integer generateId() throws SQLException {
-        int id = 0;
-        try (ResultSet rs = connection.result(generateId)) {
-            if (rs.next()) {
-                id = rs.getInt(1);
-            }
-        }
-        connection.commit();
-        return id + 1;
     }
 }

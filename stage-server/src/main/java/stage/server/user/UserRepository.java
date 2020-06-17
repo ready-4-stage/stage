@@ -1,6 +1,5 @@
 package stage.server.user;
 
-import java.sql.SQLException;
 import java.util.List;
 
 import stage.common.model.User;
@@ -12,7 +11,7 @@ import stage.common.model.User;
  * Tobias Tappert
  * @since 1.0.0
  */
-public interface UserRepository {
+interface UserRepository {
     List<User> getUsers();
 
     User getUser(Integer id);
@@ -28,6 +27,4 @@ public interface UserRepository {
     Integer getId(String userName);
 
     boolean isUniqueUserName(String userName);
-
-    Integer generateId() throws SQLException;
 }

@@ -1,6 +1,8 @@
 UPDATE USERS
 SET USERNAME = ?,
-    PASSWORD = ?,
+    PWD      = ?,
     MAIL     = ?,
-    ROLE_ID  = ?
+    ROLES_ID = ?
 WHERE ID = ?;
+
+COMMIT;

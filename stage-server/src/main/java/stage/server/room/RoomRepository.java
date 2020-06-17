@@ -11,7 +11,7 @@ import stage.common.model.Room;
  * Tobias Tappert
  * @since 1.0.0
  */
-public interface RoomRepository {
+interface RoomRepository {
     List<Room> getRooms();
 
     Room getRoom(Integer id);

@@ -3,15 +3,13 @@ package stage.server.student;
 import java.sql.Date;
 import java.sql.*;
 import java.util.*;
-import javax.annotation.PostConstruct;
 
-import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import stage.common.model.Student;
+
+import lombok.extern.log4j.Log4j2;
+import stage.common.model.*;
 import stage.server.database.SqlConnection;
-import stage.server.role.RoleService;
-import stage.server.user.UserRepository;
 
 import static stage.common.FileUtil.readFile;
 
@@ -28,57 +26,34 @@ import static stage.common.FileUtil.readFile;
 @Log4j2
 @Repository
 class StudentRepositoryH2 implements StudentRepository {
-    private final String selectStudents;
-    private final String selectStudentById;
-    private final String studentInsert;
-    private final String studentUpdate;
-    private final String studentDelete;
+    private final String select;
+    private final String selectById;
+    private final String insert;
+    private final String update;
+    private final String delete;
+    private final String sequence;
 
     private final SqlConnection connection;
 
-    // TODO: Replace UserRepository by service
-    private final UserRepository userRepository;
-    private final RoleService roleService;
-
     @Autowired
-    StudentRepositoryH2(SqlConnection connection, UserRepository userRepository,
-        RoleService roleService) {
+    StudentRepositoryH2(SqlConnection connection) {
         this.connection = connection;
-        this.userRepository = userRepository;
-        this.roleService = roleService;
 
-        selectStudents = readFile("sql/student/student_select_all.sql");
-        selectStudentById = readFile("sql/student/student_select_by_id.sql");
-        studentInsert = readFile("sql/student/student_insert.sql");
-        studentUpdate = readFile("sql/student/student_update.sql");
-        studentDelete = readFile("sql/student/student_delete.sql");
-    }
-
-    @PostConstruct
-    public void initialize() {
-        String createRoleTableSql = readFile("sql/role/role_table_create.sql");
-        String createUserTableSql = readFile("sql/user/user_table_create.sql");
-        String createStudentTableSql = readFile(
-            "sql/student/student_table_create.sql");
-
-        try {
-            connection.update(createRoleTableSql);
-            connection.update(createUserTableSql);
-            connection.update(createStudentTableSql);
-            connection.commit();
-        } catch (SQLException e) {
-            log.error("SQL error: {}", e.getMessage());
-        }
+        select = readFile("sql/student/select.sql");
+        selectById = readFile("sql/student/select_by_id.sql");
+        insert = readFile("sql/student/insert.sql");
+        update = readFile("sql/student/update.sql");
+        delete = readFile("sql/student/delete.sql");
+        sequence = readFile("sql/student/sequence.sql");
     }
 
     @Override
     public List<Student> getStudents() {
         List<Student> students = new ArrayList<>();
-        try (ResultSet resultSet = connection.result(selectStudents)) {
+        try (ResultSet resultSet = connection.result(select)) {
             while (resultSet.next()) {
                 students.add(buildStudent(resultSet));
             }
-            connection.commit();
         } catch (SQLException ex) {
             log.error(ex);
         }
@@ -89,11 +64,10 @@ class StudentRepositoryH2 implements StudentRepository {
     @Override
     public Student getStudent(Integer id) {
         Student student = null;
-        try (ResultSet resultSet = connection.result(selectStudentById, id)) {
+        try (ResultSet resultSet = connection.result(selectById, id)) {
             if (resultSet.next()) {
                 student = buildStudent(resultSet);
             }
-            connection.commit();
         } catch (SQLException ex) {
             log.error(ex);
         }
@@ -103,13 +77,24 @@ class StudentRepositoryH2 implements StudentRepository {
     @Override
     public Integer addStudent(Student student) {
         int id = -1;
-        try {
-            id = userRepository.addUser(student);
-            connection.update(studentInsert, id, student.getLastName(),
-                student.getFirstName(), student.getPlaceOfBirth(),
-                student.getPhone(), student.getAddress(), student.getAddress(),
-                new Date(student.getBirthday().toEpochDay()));
-            connection.commit();
+        try (ResultSet res = connection.result(sequence)) {
+            if (res.next()) {
+                id = res.getInt(1);
+                connection.update(insert, //
+                    id, //
+                    student.getUsername(), //
+                    student.getPassword(), //
+                    student.getRole().toString(), //
+                    student.getMail(), //
+                    id, //
+                    student.getLastName(), //
+                    student.getFirstName(), //
+                    student.getPlaceOfBirth(), //
+                    student.getPhone(), //
+                    student.getAddress(), //
+                    student.getAddress(), //
+                    new Date(student.getBirthday().toEpochDay()));
+            }
         } catch (SQLException ex) {
             log.error(ex);
         }
@@ -120,13 +105,20 @@ class StudentRepositoryH2 implements StudentRepository {
     public void updateStudent(Integer id, Student oldStudent,
         Student newStudent) {
         try {
-            userRepository.updateUser(id, newStudent);
-            connection.update(studentUpdate, newStudent.getLastName(),
-                newStudent.getFirstName(), newStudent.getPlaceOfBirth(),
-                newStudent.getPhone(), newStudent.getAddress(),
-                newStudent.getIban(),
-                new Date(oldStudent.getBirthday().toEpochDay()), id);
-            connection.commit();
+            connection.update(update, //
+                newStudent.getUsername(), //
+                newStudent.getPassword(), //
+                newStudent.getMail(), //
+                oldStudent.getRole().toString(), //
+                id, //
+                newStudent.getLastName(), //
+                newStudent.getFirstName(), //
+                newStudent.getPlaceOfBirth(), //
+                newStudent.getPhone(), //
+                newStudent.getAddress(), //
+                newStudent.getIban(), //
+                new Date(oldStudent.getBirthday().toEpochDay()), //
+                id);
         } catch (SQLException ex) {
             log.error(ex);
         }
@@ -135,10 +127,7 @@ class StudentRepositoryH2 implements StudentRepository {
     @Override
     public void deleteStudent(Integer id) {
         try {
-            connection.update(studentDelete, id);
-            connection.commit();
-
-            userRepository.deleteUser(id);
+            connection.update(delete, id, id);
         } catch (SQLException ex) {
             log.error(ex);
         }
@@ -148,9 +137,9 @@ class StudentRepositoryH2 implements StudentRepository {
         Student student = new Student();
         student.setId(resultSet.getInt("ID"));
         student.setUsername(resultSet.getString("USERNAME"));
-        student.setPassword(resultSet.getString("PASSWORD"));
+        student.setPassword(resultSet.getString("PWD"));
         student.setMail(resultSet.getString("MAIL"));
-        student.setRole(roleService.getRole(resultSet.getInt("ROLE_ID")));
+        student.setRole(Role.valueOf(resultSet.getString("ROLE_DESCRIPTION")));
         student.setLastName(resultSet.getString("LAST_NAME"));
         student.setFirstName(resultSet.getString("FIRST_NAME"));
         student.setPlaceOfBirth(resultSet.getString("PLACE_OF_BIRTH"));

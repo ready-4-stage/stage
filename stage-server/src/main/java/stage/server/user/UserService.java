@@ -5,11 +5,13 @@ import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import stage.common.CommonUserService;
 import stage.common.authentication.*;
 import stage.common.model.User;
 
 @Service
-public class UserService implements JwtUserDatabase {
+public class UserService implements JwtUserDatabase, CommonUserService {
     private final Pattern numericPattern = Pattern.compile("-?\\d+(\\.\\d+)?");
     private final UserRepository repository;
 
@@ -51,7 +53,7 @@ public class UserService implements JwtUserDatabase {
         }
         user.setId(oldUser.getId());
         user.setRole(oldUser.getRole());
-        repository.updateUser(oldUser.getId(), user);
+        updateUser(oldUser.getId(), oldUser, user);
     }
 
     public void deleteUser(String id) {
@@ -73,5 +75,10 @@ public class UserService implements JwtUserDatabase {
     @Override
     public JwtUser assertAndGet(String username) {
         return getUser(username);
+    }
+
+    private void updateUser(Integer id, User oldUser, User newUser) {
+        transferFromOldToNew(oldUser, newUser);
+        repository.updateUser(id, newUser);
     }
 }

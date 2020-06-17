@@ -2,16 +2,18 @@ package stage.server.student;
 
 import java.util.*;
 
-import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import lombok.extern.log4j.Log4j2;
+import stage.common.CommonUserService;
 import stage.common.model.*;
 import stage.server.authentication.aop.*;
 import stage.server.user.*;
 
 @Log4j2
 @Service
-public class StudentService {
+public class StudentService implements CommonUserService {
     private final StudentRepository repository;
     private final UserService userService;
 
@@ -77,21 +79,7 @@ public class StudentService {
 
     private void updateStudent(Integer id, Student oldStudent,
         Student newStudent) {
-        if (newStudent.getId() == null) {
-            newStudent.setId(oldStudent.getId());
-        }
-
-        if (newStudent.getUsername() == null) {
-            newStudent.setUsername(oldStudent.getUsername());
-        }
-
-        if (newStudent.getPassword() == null) {
-            newStudent.setPassword(oldStudent.getPassword());
-        }
-
-        if (newStudent.getMail() == null) {
-            newStudent.setMail(oldStudent.getMail());
-        }
+        transferFromOldToNew(oldStudent, newStudent);
 
         if (newStudent.getLastName() == null) {
             newStudent.setLastName(oldStudent.getLastName());

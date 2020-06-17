@@ -1,8 +1,8 @@
 package stage.server.lesson.type;
 
-import java.util.List;
-
 import stage.common.model.LessonType;
+
+import java.util.List;
 
 /**
  * // TODO description

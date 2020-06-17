@@ -28,6 +28,7 @@ import static stage.common.FileUtil.readFile;
 class StudentRepositoryH2 implements StudentRepository {
     private final String select;
     private final String selectById;
+    private final String selectByUsername;
     private final String insert;
     private final String update;
     private final String delete;
@@ -41,6 +42,7 @@ class StudentRepositoryH2 implements StudentRepository {
 
         select = readFile("sql/student/select.sql");
         selectById = readFile("sql/student/select_by_id.sql");
+        selectByUsername = readFile("sql/student/select_by_username.sql");
         insert = readFile("sql/student/insert.sql");
         update = readFile("sql/student/update.sql");
         delete = readFile("sql/student/delete.sql");
@@ -63,8 +65,17 @@ class StudentRepositoryH2 implements StudentRepository {
 
     @Override
     public Student getStudent(Integer id) {
+        return getStudent(selectById, id);
+    }
+
+    @Override
+    public Student getStudent(String username) {
+        return getStudent(selectByUsername, username);
+    }
+
+    private Student getStudent(String sql, Object where) {
         Student student = null;
-        try (ResultSet resultSet = connection.result(selectById, id)) {
+        try (ResultSet resultSet = connection.result(sql, where)) {
             if (resultSet.next()) {
                 student = buildStudent(resultSet);
             }

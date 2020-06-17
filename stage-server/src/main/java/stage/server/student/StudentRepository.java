@@ -23,12 +23,20 @@ interface StudentRepository {
     List<Student> getStudents();
 
     /**
-     * Finds a student.
+     * Finds a student by its ID.
      *
      * @param id The ID of the student.
      * @return A specific student.
      */
     Student getStudent(Integer id);
+
+    /**
+     * Finds a student by its username.
+     *
+     * @param username The username of the student.
+     * @return A specific student.
+     */
+    Student getStudent(String username);
 
     /**
      * Creates a new student.

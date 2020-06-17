@@ -1,17 +1,16 @@
 package stage.server.user;
 
-import java.util.List;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import stage.common.CommonUserService;
 import stage.common.authentication.*;
 import stage.common.model.User;
 
 @Service
-public class UserService implements JwtUserDatabase, CommonUserService {
+public class UserService implements JwtUserDatabase {
     private final Pattern numericPattern = Pattern.compile("-?\\d+(\\.\\d+)?");
     private final UserRepository repository;
 
@@ -25,7 +24,7 @@ public class UserService implements JwtUserDatabase, CommonUserService {
     }
 
     public List<User> getUsers() {
-        return repository.getUsers();
+        return anonymize(repository.getUsers());
     }
 
     public User getUser(String id) {
@@ -35,7 +34,7 @@ public class UserService implements JwtUserDatabase, CommonUserService {
         } else {
             numericId = repository.getId(id);
         }
-        return repository.getUser(numericId);
+        return anonymize(repository.getUser(numericId));
     }
 
     public Integer addUser(User user) {
@@ -68,13 +67,55 @@ public class UserService implements JwtUserDatabase, CommonUserService {
         return repository.isUniqueUserName(username);
     }
 
-    private boolean isNumeric(String check) {
+    public void transferFromOldToNew(User oldUser, User newUser) {
+        if (newUser.getId() == null) {
+            newUser.setId(oldUser.getId());
+        }
+
+        if (newUser.getUsername() == null) {
+            newUser.setUsername(oldUser.getUsername());
+        }
+
+        if (newUser.getPassword() == null) {
+            newUser.setPassword(oldUser.getPassword());
+        }
+
+        if (newUser.getMail() == null) {
+            newUser.setMail(oldUser.getMail());
+        }
+    }
+
+    public boolean isNumeric(String check) {
         return numericPattern.matcher(check).matches();
     }
 
     @Override
     public JwtUser assertAndGet(String username) {
-        return getUser(username);
+        return getUserWithPassword(username);
+    }
+
+    public List<User> anonymize(List<User> users) {
+        List<User> copies = new LinkedList<>();
+        for (User user : users) {
+            copies.add(anonymize(user));
+        }
+        return copies;
+    }
+
+    public User anonymize(User user) {
+        User copy = new User(user);
+        copy.setPassword(null);
+        return copy;
+    }
+
+    private User getUserWithPassword(String id) {
+        Integer numericId;
+        if (isNumeric(id)) {
+            numericId = Integer.parseInt(id);
+        } else {
+            numericId = repository.getId(id);
+        }
+        return repository.getUser(numericId);
     }
 
     private void updateUser(Integer id, User oldUser, User newUser) {

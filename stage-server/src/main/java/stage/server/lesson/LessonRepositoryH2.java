@@ -3,11 +3,11 @@ package stage.server.lesson;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.*;
-import javax.annotation.PostConstruct;
 
-import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import lombok.extern.log4j.Log4j2;
 import stage.common.model.Lesson;
 import stage.server.database.SqlConnection;
 import stage.server.lesson.type.LessonTypeRepository;
@@ -19,10 +19,10 @@ import static stage.common.FileUtil.readFile;
 @Log4j2
 @Repository
 public class LessonRepositoryH2 implements LessonRepository {
-    private final String lessonDelete;
-    private final String selectLessonById;
-    private final String lessonInsert;
-    private final String lessonUpdate;
+    private final String delete;
+    private final String selectById;
+    private final String insert;
+    private final String update;
     private final String selectStudents;
     private final String generateId;
 
@@ -42,31 +42,12 @@ public class LessonRepositoryH2 implements LessonRepository {
         this.roomService = roomService;
         this.lessonTypeRepository = lessonTypeRepository;
         //        this.teacherRepository = teacherRepository;
-        lessonDelete = readFile("sql/lesson/lesson_delete.sql");
-        lessonInsert = readFile("sql/lesson/lesson_insert.sql");
-        selectLessonById = readFile("sql/lesson/lesson_select_by_id.sql");
-        lessonUpdate = readFile("sql/lesson/lesson_update.sql");
+        delete = readFile("sql/lesson/delete.sql");
+        insert = readFile("sql/lesson/insert.sql");
+        selectById = readFile("sql/lesson/select_by_id.sql");
+        update = readFile("sql/lesson/update.sql");
         generateId = readFile("sql/lesson/generate_Lesson_id.sql");
-        selectStudents = readFile("sql/student/student_select_all.sql");
-    }
-
-    @PostConstruct
-    public void onInitialize() {
-        String createLessonTableSql = readFile(
-            "sql/lesson/lesson_table_create.sql");
-        String createStudentTableSql = readFile(
-            "sql/student/student_table_create.sql");
-        String createRoomTableSql = readFile("sql/room/room_table_create.sql");
-
-        try {
-            connection.update(createStudentTableSql);
-            connection.update(createRoomTableSql);
-            connection.update(createLessonTableSql);
-
-            connection.commit();
-        } catch (SQLException e) {
-            log.error("SQL error: {}", e.getMessage());
-        }
+        selectStudents = readFile("sql/student/select.sql");
     }
 
     @Override
@@ -88,7 +69,7 @@ public class LessonRepositoryH2 implements LessonRepository {
     public Lesson getLesson(Integer id) {
 
         Lesson lesson = null;
-        try (ResultSet resultSet = connection.result(selectLessonById, id)) {
+        try (ResultSet resultSet = connection.result(selectById, id)) {
             if (resultSet.next()) {
                 lesson = buildLesson(resultSet);
             }
@@ -104,9 +85,9 @@ public class LessonRepositoryH2 implements LessonRepository {
         Integer id = -1;
         try {
             id = generateId(generateId);
-            connection.update(lessonInsert, id, lesson.getBegin(),
-                lesson.getEnd(), lesson.getRoom(), lesson.getTeacher(),
-                lesson.getType(), lesson.getContent());
+            connection.update(insert, id, lesson.getBegin(), lesson.getEnd(),
+                lesson.getRoom(), lesson.getTeacher(), lesson.getType(),
+                lesson.getContent());
 
             connection.commit();
         } catch (SQLException ex) {
@@ -119,7 +100,7 @@ public class LessonRepositoryH2 implements LessonRepository {
     @Override
     public void updateLesson(Integer id, Lesson lesson) {
         try {
-            connection.update(lessonUpdate, lesson.getBegin(), lesson.getEnd(),
+            connection.update(update, lesson.getBegin(), lesson.getEnd(),
                 lesson.getRoom(), lesson.getTeacher(), lesson.getType(),
                 lesson.getContent(), id);
 
@@ -162,7 +143,7 @@ public class LessonRepositoryH2 implements LessonRepository {
     @Override
     public void deleteLesson(Integer id) {
         try {
-            connection.update(lessonDelete, id);
+            connection.update(delete, id);
             connection.commit();
         } catch (SQLException ex) {
             log.error(ex);

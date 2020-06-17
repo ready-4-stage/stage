@@ -1,16 +1,16 @@
 package stage.server.lesson;
 
-import lombok.extern.log4j.Log4j2;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import stage.common.model.Lesson;
 
-import java.util.List;
+import lombok.extern.log4j.Log4j2;
+import stage.common.model.Lesson;
 
 @Log4j2
 @Service
 public class LessonService {
-
     private final LessonRepository repository;
 
     @Autowired
@@ -18,20 +18,20 @@ public class LessonService {
         this.repository = repository;
     }
 
-    List<Lesson> getLessons() {
+    public List<Lesson> getLessons() {
         return repository.getLessons();
     }
 
-    Lesson getLesson(Integer id) {
+    public Lesson getLesson(Integer id) {
         return checkIsNull(id);
     }
 
-    Integer addLesson(Lesson lesson) {
+    public Integer addLesson(Lesson lesson) {
         lesson.setId(null);
         return repository.addLesson(lesson);
     }
 
-    void updateLesson(Integer id, Lesson lesson) {
+    public void updateLesson(Integer id, Lesson lesson) {
         Lesson oldLesson = checkIsNull(id);
         lesson.setId(oldLesson.getId());
         updateLessonById(oldLesson, lesson);
@@ -85,7 +85,8 @@ public class LessonService {
     }
 
     void deleteLesson(Integer id) {
-        if (checkIsNotNullBoolean(id))
+        if (checkIsNotNullBoolean(id)) {
             repository.deleteLesson(id);
+        }
     }
 }

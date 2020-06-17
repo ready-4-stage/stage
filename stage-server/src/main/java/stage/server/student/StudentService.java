@@ -6,14 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.log4j.Log4j2;
-import stage.common.CommonUserService;
 import stage.common.model.*;
 import stage.server.authentication.aop.*;
 import stage.server.user.*;
 
 @Log4j2
 @Service
-public class StudentService implements CommonUserService {
+public class StudentService {
     private final StudentRepository repository;
     private final UserService userService;
 
@@ -51,8 +50,9 @@ public class StudentService implements CommonUserService {
     }
 
     @RequireAdmin
-    public void updateStudent(String id, Student newStudent) {
-        Student oldStudent = getStudentByIdOrUsername(id);
+    public void updateStudent(String usernameOrId, Student newStudent) {
+        Student oldStudent = getStudentByIdOrUsername(usernameOrId);
+
         if (oldStudent == null) {
             throw new StudentNotFoundException();
         }
@@ -73,13 +73,17 @@ public class StudentService implements CommonUserService {
         repository.deleteStudent(userService.getId(id));
     }
 
-    private Student getStudentByIdOrUsername(String username) {
-        return repository.getStudent(userService.getId(username));
+    private Student getStudentByIdOrUsername(String usernameOrId) {
+        if (userService.isNumeric(usernameOrId)) {
+            return repository.getStudent(Integer.parseInt(usernameOrId));
+        } else {
+            return repository.getStudent(usernameOrId);
+        }
     }
 
     private void updateStudent(Integer id, Student oldStudent,
         Student newStudent) {
-        transferFromOldToNew(oldStudent, newStudent);
+        userService.transferFromOldToNew(oldStudent, newStudent);
 
         if (newStudent.getLastName() == null) {
             newStudent.setLastName(oldStudent.getLastName());

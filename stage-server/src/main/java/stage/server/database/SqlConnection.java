@@ -3,9 +3,10 @@ package stage.server.database;
 import java.sql.*;
 import javax.annotation.*;
 
-import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+
+import lombok.extern.log4j.Log4j2;
 
 import static stage.common.FileUtil.readFile;
 
@@ -45,7 +46,7 @@ public class SqlConnection {
     private String jdbc;
 
     public SqlConnection() {
-        initialFill = readFile("sql/initial_fill.sql");
+        initialFill = readFile("sql/startup.sql");
     }
 
     @PostConstruct
@@ -94,7 +95,6 @@ public class SqlConnection {
      * @param query      sql query
      * @param parameters sql parameters (varargs or array)
      * @return an executable statement
-     *
      * @throws SQLException if an database error occurs.
      */
     @SuppressWarnings("java:S2095") // We'll use try-with later on in the code
@@ -126,7 +126,6 @@ public class SqlConnection {
      * @param query      The query t perform.
      * @param parameters The parameters to put into the query (in order).
      * @return The {@link ResultSet} of the query.
-     *
      * @throws SQLException if an database error occurs.
      */
     public ResultSet result(String query, Object... parameters)
